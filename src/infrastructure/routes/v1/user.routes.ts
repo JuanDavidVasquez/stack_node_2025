@@ -14,7 +14,7 @@ export default function userRoutes(userController: UserController): Router {
   router.get('/', userController.getUsers);
   router.post('/', userController.createUser);
   router.get('/:id', userController.getUserById);
-  
+
   
   return router;
 }
