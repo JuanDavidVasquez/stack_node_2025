@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:latest
+    container_name: plantilla_node_2025_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: plantilla_node_2025
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: 2025*plantillA
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: plantilla_node_2025_phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: plantilla_node_2025_mysql
+      PMA_USER: admin
+      PMA_PASSWORD: secret
+    ports:
+      - "8080:80"
+    depends_on:
+      - mysql
+
+volumes:
+  mysql_data:
