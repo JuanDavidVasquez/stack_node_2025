@@ -19,6 +19,8 @@ export class UserController {
         this.createUser = this.createUser.bind(this);
         this.getUserById = this.getUserById.bind(this);
         this.getUsers = this.getUsers.bind(this);
+        this.updateUser = this.updateUser.bind(this);
+        this.deleteUser = this.deleteUser.bind(this);
     }
 
     /**
@@ -46,7 +48,6 @@ export class UserController {
             next(error);
         }
     }
-
     /**
      * Obtiene todos los usuarios
      */
@@ -59,4 +60,29 @@ export class UserController {
             next(error);
         }
     }
+    /**
+     * Actualiza un usuario por su ID
+     */
+    public async updateUser(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            this.logger.info('Updating user...');
+            await this.userService.updateUser(req, res, next);
+        } catch (error) {
+            this.logger.error('Error updating user:', error);
+            next(error);
+        }
+    }
+    /**
+ * Elimina un usuario por su ID
+ */
+    public async deleteUser(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            this.logger.info('Deleting user...');
+            await this.userService.deleteUser(req, res, next);
+        } catch (error) {
+            this.logger.error('Error deleting user:', error);
+            next(error);
+        }
+    }
+
 }

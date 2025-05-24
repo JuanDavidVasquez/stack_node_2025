@@ -166,7 +166,7 @@ export class UserRepositoryImpl implements UserRepository {
 
 
   /**
-   * Guarda un usuario (crea o actualiza)
+   * Guarda un usuario
    * @param user Usuario a guardar
    * @returns Usuario guardado
    */

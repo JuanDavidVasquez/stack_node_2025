@@ -23,6 +23,14 @@ export interface CreateUserResponseDTO extends UserResponseDTO {
   // Campos específicos para la respuesta de creación, si los hay
   verificationCode?: string;
 }
+/**
+ * DTO específico para la respuesta del caso de uso de update usuario
+ */
+
+export interface UpdateUserResponseDTO extends UserResponseDTO {
+  // Campos específicos para la respuesta de actualización, si los hay
+  verificationCode?: string;
+}
 
 /**
  * DTO para respuesta de autenticación de usuario (login)
