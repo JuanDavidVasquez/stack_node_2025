@@ -1,14 +1,28 @@
 // src/application/dtos/request/user/create-user-request.dto.ts
-import { UserRole } from "../../../../shared/constants/roles";
+
+import { CreateUserSchemaType, safeValidateUserData, validateUserData } from "../../../shemas/user.shemas";
 
 /**
  * DTO para la solicitud de creación de usuario
- * Representa los datos de entrada necesarios para el caso de uso de crear usuario
+ * Derivado del schema de Zod para mantener consistencia
  */
-export interface CreateUserRequestDTO {
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-  role?: UserRole;
-}
+export type CreateUserRequestDTO = CreateUserSchemaType;
+
+/**
+ * Función para validar los datos de creación de usuario
+ * @param data Datos a validar
+ * @returns Datos validados y transformados
+ * @throws ZodError si la validación falla
+ */
+export const validateCreateUserRequest = (data: unknown): CreateUserRequestDTO => {
+  return validateUserData.createUser(data);
+};
+
+/**
+ * Función para validación segura (no lanza errores)
+ * @param data Datos a validar
+ * @returns Resultado de validación con success boolean
+ */
+export const safeValidateCreateUserRequest = (data: unknown) => {
+  return safeValidateUserData.createUser(data);
+};

@@ -5,8 +5,9 @@ import { EncryptionAdapter, UuidAdapter } from "../../../infrastructure/adaptado
 import { config } from "../../../infrastructure/database/config/env";
 import { setupLogger } from "../../../infrastructure/utils/logger";
 import { ApplicationError } from "../../../shared/errors/application.error";
-import { UpdateUserRequestDTO } from "../../dtos/request/user/update-user-request.dto";
+import { UpdateUserRequestDTO, validateUpdateUserRequest } from "../../dtos/request/user/update-user-request.dto";
 import { UpdateUserResponseDTO } from "../../dtos/response/user/user-response.dto";
+import { ZodError } from 'zod';
 
 /**
  * Caso de uso para actualizar un usuario existente
@@ -26,11 +27,14 @@ export class UpdateUserUseCase {
     /**
      * Ejecuta el caso de uso
      * @param userId ID del usuario a actualizar
-     * @param updateUserDTO Datos para actualizar el usuario
+     * @param rawUpdateData Datos sin validar para actualizar el usuario
      * @returns Datos del usuario actualizado
      */
-    async execute(userId: string, updateUserDTO: UpdateUserRequestDTO): Promise<UpdateUserResponseDTO> {
+    async execute(userId: string, rawUpdateData: unknown): Promise<UpdateUserResponseDTO> {
         try {
+            // Validar entrada con Zod
+            const updateUserDTO = validateUpdateUserRequest(rawUpdateData);
+            
             this.logger.info(`Updating user with ID: ${userId}`);
 
             // Verificar si el usuario existe
@@ -96,6 +100,13 @@ export class UpdateUserUseCase {
             };
 
         } catch (error) {
+            if (error instanceof ZodError) {
+                const errorMessages = error.errors.map(err => 
+                    `${err.path.join('.')}: ${err.message}`
+                ).join(', ');
+                throw new ApplicationError(`Validation failed: ${errorMessages}`);
+            }
+            
             if (error instanceof ApplicationError) {
                 throw error;
             }

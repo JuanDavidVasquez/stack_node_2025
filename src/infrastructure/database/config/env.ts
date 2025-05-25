@@ -43,6 +43,9 @@ export const config = {
     version: process.env.APP_VERSION || "1.0.0",
     env: process.env.NODE_ENV || "development",
     port: parseInt(process.env.PORT || "4000", 10),
+    baseUrl: process.env.APP_BASE_URL || "http://localhost:4000",
+    frontendUrl: process.env.FRONTEND_URL || "http://localhost:3000",
+    supportEmail: process.env.SUPPORT_EMAIL || "suport@onelessonperday.co",
   },
 
   database: {
@@ -94,7 +97,9 @@ export const config = {
   api: {
     prefix: process.env.API_PREFIX || "/api/v1",
     rateLimit: parseInt(process.env.API_RATE_LIMIT || "100", 10),
-    rateLimitWindow: process.env.API_RATE_LIMIT_WINDOW || "15m",
+    frontendUrl: process.env.FRONTEND_URL || "http://localhost:3000",
+    supportEmail: process.env.SUPPORT_EMAIL || "suport@onelessonperday.co",
+    rateLimitWindow: process.env.API_RATE_LIMIT_WINDOW || "1m",
   },
 
   // Nueva sección para tareas programadas

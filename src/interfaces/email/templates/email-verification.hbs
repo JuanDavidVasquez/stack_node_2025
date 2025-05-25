@@ -1,0 +1,463 @@
+<!-- src/interfaces/email/templates/email-verification.hbs -->
+
+<!-- Encabezado de verificación -->
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+        <td style="padding-bottom: 30px;" align="center">
+            <h2 style="
+                margin: 0 0 10px 0;
+                padding: 0;
+                font-family: Arial, sans-serif;
+                font-size: 28px;
+                font-weight: bold;
+                color: #007bff;
+                text-align: center;
+            ">
+                📧 Verifica tu email
+            </h2>
+            
+            <p style="
+                margin: 0;
+                padding: 0;
+                font-family: Arial, sans-serif;
+                font-size: 16px;
+                color: #6c757d;
+                line-height: 24px;
+                text-align: center;
+            ">
+                Confirma tu dirección de correo electrónico para activar tu cuenta
+            </p>
+        </td>
+    </tr>
+</table>
+
+<!-- Saludo personalizado -->
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+        <td style="padding-bottom: 20px;">
+            <p style="
+                margin: 0;
+                padding: 0;
+                font-family: Arial, sans-serif;
+                font-size: 16px;
+                color: #333333;
+                line-height: 24px;
+            ">
+                Hola {{#if firstName}}{{firstName}}{{else}}{{email}}{{/if}},
+            </p>
+        </td>
+    </tr>
+</table>
+
+<!-- Mensaje principal -->
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+        <td style="padding-bottom: 25px;">
+            <p style="
+                margin: 0 0 15px 0;
+                padding: 0;
+                font-family: Arial, sans-serif;
+                font-size: 16px;
+                color: #333333;
+                line-height: 24px;
+            ">
+                ¡Gracias por registrarte en <strong>{{appName}}</strong>! Para completar tu registro y activar tu cuenta, 
+                necesitamos verificar tu dirección de correo electrónico.
+            </p>
+            
+            <p style="
+                margin: 0;
+                padding: 0;
+                font-family: Arial, sans-serif;
+                font-size: 16px;
+                color: #333333;
+                line-height: 24px;
+            ">
+                Por favor, usa el código de verificación que encontrarás más abajo para confirmar tu email.
+            </p>
+        </td>
+    </tr>
+</table>
+
+<!-- Código de verificación -->
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+        <td style="padding: 30px 0;" align="center">
+            <p style="
+                margin: 0 0 20px 0;
+                padding: 0;
+                font-family: Arial, sans-serif;
+                font-size: 18px;
+                color: #333333;
+                text-align: center;
+                font-weight: bold;
+            ">
+                Tu código de verificación es:
+            </p>
+            
+            <!-- Código destacado -->
+            <table border="0" cellpadding="0" cellspacing="0" style="margin: 20px auto;">
+                <tr>
+                    <td style="
+                        background-color: #e8f4fd;
+                        border: 3px dashed #007bff;
+                        border-radius: 15px;
+                        padding: 25px 35px;
+                        text-align: center;
+                        box-shadow: 0 4px 8px rgba(0, 123, 255, 0.1);
+                    ">
+                        <p style="
+                            margin: 0;
+                            padding: 0;
+                            font-family: 'Courier New', monospace;
+                            font-size: 36px;
+                            font-weight: bold;
+                            color: #007bff;
+                            letter-spacing: 8px;
+                            text-align: center;
+                        ">
+                            {{verificationCode}}
+                        </p>
+                    </td>
+                </tr>
+            </table>
+            
+            <p style="
+                margin: 20px 0 0 0;
+                padding: 0;
+                font-family: Arial, sans-serif;
+                font-size: 14px;
+                color: #6c757d;
+                text-align: center;
+                line-height: 20px;
+            ">
+                Ingresa este código en la página de verificación para activar tu cuenta.
+            </p>
+        </td>
+    </tr>
+</table>
+
+<!-- Botón de verificación (opcional) -->
+{{#if verificationUrl}}
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+        <td style="padding: 20px 0;" align="center">
+            <p style="
+                margin: 0 0 20px 0;
+                padding: 0;
+                font-family: Arial, sans-serif;
+                font-size: 16px;
+                color: #333333;
+                text-align: center;
+            ">
+                O haz clic en el siguiente botón para verificar automáticamente:
+            </p>
+
+            {{> button 
+                url=verificationUrl
+                text="✅ Verificar mi email"
+                backgroundColor="#28a745"
+                textColor="#ffffff"
+                width="250"
+                height="50"
+                fontSize="16"
+                fontWeight="bold"
+                borderRadius="8"
+                margin="10px 0"
+            }}
+            
+            <p style="
+                margin: 15px 0 0 0;
+                padding: 0;
+                font-family: Arial, sans-serif;
+                font-size: 12px;
+                color: #6c757d;
+                text-align: center;
+                line-height: 18px;
+            ">
+                Si no puedes hacer clic en el botón, copia y pega este enlace en tu navegador:<br>
+                <a href="{{verificationUrl}}" style="color: #007bff; word-break: break-all; font-size: 11px;">{{verificationUrl}}</a>
+            </p>
+        </td>
+    </tr>
+</table>
+{{/if}}
+
+<!-- Información de expiración -->
+{{#if expirationTime}}
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+        <td style="padding: 20px 0;">
+            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                    <td style="
+                        background-color: #fff3cd;
+                        border-left: 4px solid #ffc107;
+                        padding: 15px 20px;
+                        border-radius: 4px;
+                    ">
+                        <p style="
+                            margin: 0;
+                            padding: 0;
+                            font-family: Arial, sans-serif;
+                            font-size: 14px;
+                            color: #856404;
+                            font-weight: 500;
+                            line-height: 20px;
+                        ">
+                            ⏰ <strong>Importante:</strong> Este código de verificación expirará en <strong>{{expirationTime}}</strong>. 
+                            Si no verificas tu email dentro de este tiempo, tendrás que solicitar un nuevo código.
+                        </p>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+{{/if}}
+
+<!-- Instrucciones paso a paso -->
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+        <td style="padding: 25px 0;">
+            <h3 style="
+                margin: 0 0 15px 0;
+                padding: 0;
+                font-family: Arial, sans-serif;
+                font-size: 18px;
+                font-weight: bold;
+                color: #2c3e50;
+            ">
+                📋 Cómo verificar tu email
+            </h3>
+            
+            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                    <td style="
+                        background-color: #e3f2fd;
+                        border-left: 4px solid #2196f3;
+                        padding: 15px 20px;
+                        border-radius: 4px;
+                    ">
+                        <ol style="
+                            margin: 0;
+                            padding: 0 0 0 20px;
+                            font-family: Arial, sans-serif;
+                            font-size: 14px;
+                            color: #1565c0;
+                            line-height: 20px;
+                        ">
+                            <li style="margin-bottom: 8px;">Ve a la página de verificación de email en {{appName}}</li>
+                            <li style="margin-bottom: 8px;">Ingresa el código de 6 dígitos que aparece arriba</li>
+                            <li style="margin-bottom: 8px;">Haz clic en "Verificar"</li>
+                            <li>¡Tu cuenta estará activada y lista para usar!</li>
+                        </ol>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+
+<!-- Información de seguridad -->
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+        <td style="padding: 20px 0;">
+            <h4 style="
+                margin: 0 0 10px 0;
+                padding: 0;
+                font-family: Arial, sans-serif;
+                font-size: 16px;
+                font-weight: bold;
+                color: #495057;
+            ">
+                🛡️ Información de seguridad
+            </h4>
+            
+            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                    <td style="padding: 5px 0;">
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                            <tr>
+                                <td style="width: 20px; vertical-align: top; padding-right: 10px;">
+                                    <span style="font-size: 14px;">✅</span>
+                                </td>
+                                <td style="vertical-align: top;">
+                                    <p style="
+                                        margin: 0;
+                                        padding: 0;
+                                        font-family: Arial, sans-serif;
+                                        font-size: 14px;
+                                        color: #333333;
+                                        line-height: 20px;
+                                    ">
+                                        Este código es único y solo puede ser usado una vez
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td style="padding: 5px 0;">
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                            <tr>
+                                <td style="width: 20px; vertical-align: top; padding-right: 10px;">
+                                    <span style="font-size: 14px;">⚠️</span>
+                                </td>
+                                <td style="vertical-align: top;">
+                                    <p style="
+                                        margin: 0;
+                                        padding: 0;
+                                        font-family: Arial, sans-serif;
+                                        font-size: 14px;
+                                        color: #333333;
+                                        line-height: 20px;
+                                    ">
+                                        No compartas este código con nadie
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td style="padding: 5px 0;">
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                            <tr>
+                                <td style="width: 20px; vertical-align: top; padding-right: 10px;">
+                                    <span style="font-size: 14px;">🔒</span>
+                                </td>
+                                <td style="vertical-align: top;">
+                                    <p style="
+                                        margin: 0;
+                                        padding: 0;
+                                        font-family: Arial, sans-serif;
+                                        font-size: 14px;
+                                        color: #333333;
+                                        line-height: 20px;
+                                    ">
+                                        Solo usa este código en el sitio oficial de {{appName}}
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+
+<!-- Alerta si no solicitó el registro -->
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+        <td style="padding: 20px 0;">
+            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                    <td style="
+                        background-color: #f8d7da;
+                        border-left: 4px solid #dc3545;
+                        padding: 15px 20px;
+                        border-radius: 4px;
+                    ">
+                        <h5 style="
+                            margin: 0 0 8px 0;
+                            padding: 0;
+                            font-family: Arial, sans-serif;
+                            font-size: 14px;
+                            font-weight: bold;
+                            color: #721c24;
+                        ">
+                            🚨 ¿No te registraste?
+                        </h5>
+                        
+                        <p style="
+                            margin: 0;
+                            padding: 0;
+                            font-family: Arial, sans-serif;
+                            font-size: 13px;
+                            color: #721c24;
+                            line-height: 18px;
+                        ">
+                            Si no creaste una cuenta en {{appName}}, puedes ignorar este email. 
+                            Tu dirección de email no será agregada sin tu confirmación.
+                        </p>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+
+<!-- Información adicional -->
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+        <td style="padding: 20px 0;">
+            <p style="
+                margin: 0 0 15px 0;
+                padding: 0;
+                font-family: Arial, sans-serif;
+                font-size: 14px;
+                color: #6c757d;
+                line-height: 20px;
+            ">
+                Una vez que verifiques tu email, podrás acceder a todas las funcionalidades de {{appName}} 
+                y comenzar a disfrutar de nuestra plataforma.
+            </p>
+            
+            <p style="
+                margin: 0;
+                padding: 0;
+                font-family: Arial, sans-serif;
+                font-size: 14px;
+                color: #6c757d;
+                line-height: 20px;
+            ">
+                Si tienes problemas con la verificación o necesitas un nuevo código, puedes 
+                {{#if supportEmail}}
+                    contactarnos en <a href="mailto:{{supportEmail}}" style="color: #007bff;">{{supportEmail}}</a>
+                {{else}}
+                    contactar a nuestro equipo de soporte
+                {{/if}}
+            </p>
+        </td>
+    </tr>
+</table>
+
+<!-- Mensaje de cierre -->
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+        <td style="padding: 20px 0;">
+            <p style="
+                margin: 0;
+                padding: 0;
+                font-family: Arial, sans-serif;
+                font-size: 16px;
+                color: #333333;
+                line-height: 24px;
+            ">
+                {{#if signature}}
+                    {{{signature}}}
+                {{else}}
+                    ¡Gracias por unirte a nosotros!<br>
+                    <strong>El equipo de {{appName}} 🚀</strong>
+                {{/if}}
+            </p>
+            
+            {{#if timestamp}}
+            <p style="
+                margin: 15px 0 0 0;
+                padding: 0;
+                font-family: Arial, sans-serif;
+                font-size: 12px;
+                color: #999999;
+            ">
+                📅 Email enviado el {{timestamp}}
+            </p>
+            {{/if}}
+        </td>
+    </tr>
+</table>

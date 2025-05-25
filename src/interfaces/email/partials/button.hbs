@@ -1,0 +1,51 @@
+<!-- src/interfaces/email/partials/button.hbs -->
+<table border="0" cellpadding="0" cellspacing="0" style="margin: {{margin}} auto;">
+    <tr>
+        <td align="center">
+            <!--[if mso]>
+            <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" 
+                         xmlns:w="urn:schemas-microsoft-com:office:word" 
+                         href="{{url}}" 
+                         style="height:{{height}}px;v-text-anchor:middle;width:{{width}}px;" 
+                         arcsize="{{arcsize}}%" 
+                         stroke="f" 
+                         fillcolor="{{backgroundColor}}">
+                <w:anchorlock/>
+                <center>
+            <![endif]-->
+            
+            <a href="{{url}}" 
+               target="_blank"
+               style="
+                   background-color: {{backgroundColor}};
+                   border: {{#if borderColor}}2px solid {{borderColor}}{{else}}none{{/if}};
+                   border-radius: {{borderRadius}}px;
+                   color: {{textColor}};
+                   display: inline-block;
+                   font-family: Arial, sans-serif;
+                   font-size: {{fontSize}}px;
+                   font-weight: {{fontWeight}};
+                   line-height: {{height}}px;
+                   text-align: center;
+                   text-decoration: none;
+                   width: {{width}}px;
+                   height: {{height}}px;
+                   -webkit-text-size-adjust: none;
+                   mso-hide: all;
+                   {{#if customStyles}}{{customStyles}}{{/if}}
+               ">
+                {{#if icon}}{{icon}} {{/if}}{{text}}
+            </a>
+            
+            <!--[if mso]>
+                </center>
+            </v:roundrect>
+            <![endif]-->
+        </td>
+    </tr>
+</table>
+
+<!-- Versión texto plano para clientes que no soportan HTML -->
+<div style="display: none; font-size: 1px; color: #fefefe; line-height: 1px; font-family: Arial, sans-serif; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden;">
+    {{text}}: {{url}}
+</div>

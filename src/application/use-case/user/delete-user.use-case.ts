@@ -3,8 +3,9 @@ import { UserRepository } from '../../../domain/repositories/user.repository';
 import { ApplicationError } from '../../../shared/errors/application.error';
 import { setupLogger } from '../../../infrastructure/utils/logger';
 import { config } from '../../../infrastructure/database/config/env';
-import { DeleteUserRequestDTO } from '../../dtos/request/user/delete-user-request.dto';
+import { validateDeleteUserRequest } from '../../dtos/request/user/delete-user-request.dto';
 import { DeleteUserResponseDTO } from '../../dtos/response/user/delete-user-response.dto';
+import { ZodError } from 'zod';
 
 /**
  * Caso de uso para eliminar un usuario (soft delete)
@@ -21,11 +22,14 @@ export class DeleteUserUseCase {
 
     /**
      * Ejecuta el caso de uso
-     * @param deleteUserDTO Datos para eliminar el usuario
+     * @param rawDeleteData Datos sin validar para eliminar el usuario
      * @returns Confirmación de eliminación
      */
-    async execute(deleteUserDTO: DeleteUserRequestDTO): Promise<DeleteUserResponseDTO> {
+    async execute(rawDeleteData: unknown): Promise<DeleteUserResponseDTO> {
         try {
+            // Validar entrada con Zod
+            const deleteUserDTO = validateDeleteUserRequest(rawDeleteData);
+            
             this.logger.info(`Deleting user with ID: ${deleteUserDTO.userId}`);
 
             // Verificar si el usuario existe
@@ -54,11 +58,18 @@ export class DeleteUserUseCase {
             };
 
         } catch (error) {
+            if (error instanceof ZodError) {
+                const errorMessages = error.errors.map(err => 
+                    `${err.path.join('.')}: ${err.message}`
+                ).join(', ');
+                throw new ApplicationError(`Validation failed: ${errorMessages}`);
+            }
+            
             if (error instanceof ApplicationError) {
                 throw error;
             }
 
-            this.logger.error(`Error deleting user with ID ${deleteUserDTO.userId}:`, error);
+            this.logger.error(`Error deleting user with ID:`, error);
             throw new ApplicationError(`Error deleting user: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
     }

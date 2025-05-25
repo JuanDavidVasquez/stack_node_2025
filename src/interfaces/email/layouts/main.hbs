@@ -1,0 +1,221 @@
+<!-- src/interfaces/email/layouts/main.hbs -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{subject}} - {{appName}}</title>
+    <!--[if mso]>
+    <noscript>
+        <xml>
+            <o:OfficeDocumentSettings>
+                <o:PixelsPerInch>96</o:PixelsPerInch>
+            </o:OfficeDocumentSettings>
+        </xml>
+    </noscript>
+    <![endif]-->
+    <style type="text/css">
+        /* CSS Reset para emails */
+        body, table, td, p, a, li, blockquote {
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+        
+        table, td {
+            mso-table-lspace: 0pt;
+            mso-table-rspace: 0pt;
+        }
+        
+        img {
+            -ms-interpolation-mode: bicubic;
+            border: 0;
+            height: auto;
+            line-height: 100%;
+            outline: none;
+            text-decoration: none;
+        }
+
+        /* Estilos base */
+        body {
+            height: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
+            background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Tabla principal */
+        .main-table {
+            border-collapse: collapse;
+            mso-table-lspace: 0pt;
+            mso-table-rspace: 0pt;
+        }
+
+        /* Contenedor de email */
+        .email-container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        /* Estilos de texto */
+        .text-content {
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            line-height: 24px;
+            color: #333333;
+        }
+
+        .heading-1 {
+            font-family: Arial, sans-serif;
+            font-size: 28px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 0;
+            padding: 0;
+        }
+
+        .heading-2 {
+            font-family: Arial, sans-serif;
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 0;
+            padding: 0;
+        }
+
+        .heading-3 {
+            font-family: Arial, sans-serif;
+            font-size: 20px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Botones */
+        .button {
+            background-color: #007bff;
+            border-radius: 5px;
+            color: #ffffff;
+            display: inline-block;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            font-weight: bold;
+            line-height: 50px;
+            text-align: center;
+            text-decoration: none;
+            width: 200px;
+            -webkit-text-size-adjust: none;
+            mso-hide: all;
+        }
+
+        .button-success { background-color: #28a745; }
+        .button-warning { background-color: #ffc107; color: #212529; }
+        .button-danger { background-color: #dc3545; }
+
+        /* Código de verificación */
+        .verification-code {
+            background-color: #f8f9fa;
+            border: 2px dashed #007bff;
+            font-family: 'Courier New', monospace;
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+            text-align: center;
+            padding: 15px;
+            letter-spacing: 3px;
+        }
+
+        /* Alertas */
+        .alert-info { background-color: #d1ecf1; color: #0c5460; }
+        .alert-success { background-color: #d4edda; color: #155724; }
+        .alert-warning { background-color: #fff3cd; color: #856404; }
+        .alert-danger { background-color: #f8d7da; color: #721c24; }
+
+        /* Media queries para responsive */
+        @media only screen and (max-width: 600px) {
+            .main-table {
+                width: 100% !important;
+            }
+            
+            .email-container {
+                width: 100% !important;
+                border-radius: 0 !important;
+            }
+            
+            .content-padding {
+                padding: 20px !important;
+            }
+            
+            .button {
+                width: 100% !important;
+                display: block !important;
+            }
+            
+            .heading-1 { font-size: 24px !important; }
+            .heading-2 { font-size: 20px !important; }
+            .verification-code { font-size: 20px !important; }
+        }
+
+        /* Ocultar en Outlook */
+        .mso-hide {
+            mso-hide: all;
+        }
+
+        /* Mostrar solo en Outlook */
+        <!--[if mso]>
+        .outlook-only {
+            display: block !important;
+        }
+        <![endif]-->
+        
+        .outlook-only {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Tabla principal externa -->
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" class="main-table">
+        <tr>
+            <td align="center" style="padding: 20px 0; background-color: #f4f4f4;">
+                
+                <!-- Tabla del contenedor de email -->
+                <table border="0" cellpadding="0" cellspacing="0" width="600" class="email-container" style="background-color: #ffffff; border-radius: 10px;">
+                    
+                    <!-- Header -->
+                    <tr>
+                        <td>
+                            {{{header}}}
+                        </td>
+                    </tr>
+                    
+                    <!-- Contenido principal -->
+                    <tr>
+                        <td class="content-padding" style="padding: 40px;">
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                <tr>
+                                    <td class="text-content">
+                                        {{{body}}}
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    
+                    <!-- Footer -->
+                    <tr>
+                        <td>
+                            {{{footer}}}
+                        </td>
+                    </tr>
+                    
+                </table>
+                
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

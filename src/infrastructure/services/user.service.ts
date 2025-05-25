@@ -30,6 +30,7 @@ import { DomainError } from '../../shared/errors/domain.error';
 import { InfrastructureError } from '../../shared/errors/infrastructure.error';
 import { UserRole } from '../../shared/constants/roles';
 import { User } from '../../domain/entities/user.entity';
+import { EmailService } from './email.service';
 
 export class UserService {
     private readonly logger = setupLogger({
@@ -46,7 +47,8 @@ export class UserService {
         private readonly databaseManager: DatabaseManager,
         private readonly encryptionAdapter: EncryptionAdapter,
         private readonly uuidAdapter: UuidAdapter,
-        private readonly jwtAdapter: JwtAdapter
+        private readonly jwtAdapter: JwtAdapter,
+         private readonly emailService: EmailService 
     ) {
         // Inicializar repositorio
         this.userRepository = new UserRepositoryImpl(databaseManager);
@@ -55,7 +57,8 @@ export class UserService {
         this.createUserUseCase = new CreateUserUseCase(
             this.userRepository,
             this.encryptionAdapter,
-            this.uuidAdapter
+            this.uuidAdapter,
+            this.emailService
         );
 
         this.getUserUseCase = new GetUserUseCase(
@@ -143,8 +146,8 @@ export class UserService {
             this.logger.debug('Request to get users list with filters:', req.query);
 
             // Extraer y validar parámetros de consulta
-            const page = req.query.page ? parseInt(req.query.page as string, 10) : undefined;
-            const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : undefined;
+            const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
+            const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 10;
 
             // Validar role si se proporciona
             let role: UserRole | undefined = undefined;
@@ -170,8 +173,8 @@ export class UserService {
                 search: req.query.search as string | undefined,
                 role,
                 isActive,
-                orderBy: req.query.orderBy as string | undefined,
-                orderDirection: (req.query.orderDirection as 'ASC' | 'DESC' | undefined)
+                orderBy: (req.query.orderBy as string) ?? 'id',
+                orderDirection: ((req.query.orderDirection as string)?.toUpperCase() === 'ASC' ? 'ASC' : 'DESC') as 'ASC' | 'DESC'
             };
 
             // Ejecutar el caso de uso

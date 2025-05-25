@@ -1,28 +1,28 @@
 // src/application/dtos/request/user/delete-user-request.dto.ts
+
+import { DeleteUserSchemaType, safeValidateUserData, validateUserData } from "../../../shemas/user.shemas";
+
 /**
  * DTO para la solicitud de eliminación de usuario
+ * Derivado del schema de Zod para mantener consistencia
  */
-export interface DeleteUserRequestDTO {
-    userId: string;
-}
+export type DeleteUserRequestDTO = DeleteUserSchemaType;
 
 /**
- * Validaciones para el DTO de eliminación
+ * Función para validar los datos de eliminación de usuario
+ * @param data Datos a validar
+ * @returns Datos validados y transformados
+ * @throws ZodError si la validación falla
  */
-export const validateDeleteUserRequest = (dto: DeleteUserRequestDTO): string[] => {
-    const errors: string[] = [];
+export const validateDeleteUserRequest = (data: unknown): DeleteUserRequestDTO => {
+  return validateUserData.deleteUser(data);
+};
 
-    if (!dto.userId) {
-        errors.push('User ID is required');
-    }
-
-    if (dto.userId && typeof dto.userId !== 'string') {
-        errors.push('User ID must be a string');
-    }
-
-    if (dto.userId && dto.userId.trim().length === 0) {
-        errors.push('User ID cannot be empty');
-    }
-
-    return errors;
+/**
+ * Función para validación segura (no lanza errores)
+ * @param data Datos a validar
+ * @returns Resultado de validación con success boolean
+ */
+export const safeValidateDeleteUserRequest = (data: unknown) => {
+  return safeValidateUserData.deleteUser(data);
 };
