@@ -1,49 +1,28 @@
 // src/application/dtos/request/user/update-user-request.dto.ts
-import { UserRole } from "../../../../shared/constants/roles";
+
+import { safeValidateUserData, UpdateUserSchemaType, validateUserData } from "../../../shemas/user.shemas";
 
 /**
  * DTO para la solicitud de actualización de usuario
- * Todos los campos son opcionales para permitir actualizaciones parciales
+ * Derivado del schema de Zod para mantener consistencia
  */
-export interface UpdateUserRequestDTO {
-    email?: string;
-    password?: string;
-    firstName?: string;
-    lastName?: string;
-    role?: UserRole;
-    isActive?: boolean;
-}
+export type UpdateUserRequestDTO = UpdateUserSchemaType;
 
 /**
- * Validaciones opcionales para el DTO (puedes usar class-validator si prefieres)
+ * Función para validar los datos de actualización de usuario
+ * @param data Datos a validar
+ * @returns Datos validados y transformados
+ * @throws ZodError si la validación falla
  */
-export const validateUpdateUserRequest = (dto: UpdateUserRequestDTO): string[] => {
-    const errors: string[] = [];
+export const validateUpdateUserRequest = (data: unknown): UpdateUserRequestDTO => {
+  return validateUserData.updateUser(data);
+};
 
-    if (dto.email !== undefined) {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(dto.email)) {
-            errors.push('Invalid email format');
-        }
-    }
-
-    if (dto.password !== undefined) {
-        if (dto.password.length < 6) {
-            errors.push('Password must be at least 6 characters long');
-        }
-    }
-
-    if (dto.firstName !== undefined) {
-        if (dto.firstName.trim().length === 0) {
-            errors.push('First name cannot be empty');
-        }
-    }
-
-    if (dto.lastName !== undefined) {
-        if (dto.lastName.trim().length === 0) {
-            errors.push('Last name cannot be empty');
-        }
-    }
-
-    return errors;
+/**
+ * Función para validación segura (no lanza errores)
+ * @param data Datos a validar
+ * @returns Resultado de validación con success boolean
+ */
+export const safeValidateUpdateUserRequest = (data: unknown) => {
+  return safeValidateUserData.updateUser(data);
 };

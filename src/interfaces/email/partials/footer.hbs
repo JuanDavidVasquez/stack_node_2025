@@ -1,0 +1,434 @@
+<!-- src/interfaces/email/partials/footer.hbs -->
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+        <td style="background-color: #f8f9fa; padding: 30px 40px; border-top: 1px solid #e9ecef;">
+            
+            <!-- Información de contacto y soporte -->
+            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                    <td align="center" style="padding-bottom: 20px;">
+                        
+                        <!-- Título de ayuda -->
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                            <tr>
+                                <td align="center">
+                                    <h4 style="
+                                        color: #495057;
+                                        margin: 0 0 10px 0;
+                                        padding: 0;
+                                        font-family: Arial, sans-serif;
+                                        font-size: 16px;
+                                        font-weight: bold;
+                                    ">
+                                        ¿Necesitas ayuda?
+                                    </h4>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center">
+                                    <p style="
+                                        margin: 0 0 15px 0;
+                                        padding: 0;
+                                        font-family: Arial, sans-serif;
+                                        font-size: 14px;
+                                        color: #6c757d;
+                                        line-height: 20px;
+                                    ">
+                                        Si tienes alguna pregunta o necesitas asistencia, estamos aquí para ayudarte.
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                        
+                        <!-- Enlaces de contacto -->
+                        <table border="0" cellpadding="0" cellspacing="0">
+                            <tr>
+                                {{#if supportEmail}}
+                                <td style="padding: 0 10px;">
+                                    <a href="mailto:{{supportEmail}}" style="
+                                        color: #007bff;
+                                        text-decoration: none;
+                                        font-family: Arial, sans-serif;
+                                        font-size: 14px;
+                                        font-weight: bold;
+                                    ">
+                                        📧 {{supportEmail}}
+                                    </a>
+                                </td>
+                                {{/if}}
+                                
+                                {{#if supportPhone}}
+                                <td style="padding: 0 10px;">
+                                    <a href="tel:{{supportPhone}}" style="
+                                        color: #007bff;
+                                        text-decoration: none;
+                                        font-family: Arial, sans-serif;
+                                        font-size: 14px;
+                                        font-weight: bold;
+                                    ">
+                                        📞 {{supportPhone}}
+                                    </a>
+                                </td>
+                                {{/if}}
+                                
+                                {{#if supportUrl}}
+                                <td style="padding: 0 10px;">
+                                    <a href="{{supportUrl}}" style="
+                                        color: #007bff;
+                                        text-decoration: none;
+                                        font-family: Arial, sans-serif;
+                                        font-size: 14px;
+                                        font-weight: bold;
+                                    ">
+                                        🌐 Centro de Ayuda
+                                    </a>
+                                </td>
+                                {{/if}}
+                            </tr>
+                        </table>
+                        
+                    </td>
+                </tr>
+            </table>
+
+            <!-- Divisor -->
+            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                    <td style="border-top: 1px solid #dee2e6; padding: 20px 0;">
+                        <!-- Espacio vacío para el divisor -->
+                    </td>
+                </tr>
+            </table>
+
+            <!-- Enlaces útiles -->
+            {{#if showQuickLinks}}
+            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                    <td align="center" style="padding-bottom: 20px;">
+                        
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                            <tr>
+                                <td align="center">
+                                    <h5 style="
+                                        color: #495057;
+                                        margin: 0 0 10px 0;
+                                        padding: 0;
+                                        font-family: Arial, sans-serif;
+                                        font-size: 14px;
+                                        font-weight: bold;
+                                    ">
+                                        Enlaces Útiles
+                                    </h5>
+                                </td>
+                            </tr>
+                        </table>
+                        
+                        <table border="0" cellpadding="0" cellspacing="0">
+                            <tr>
+                                {{#if dashboardUrl}}
+                                <td style="padding: 0 15px;">
+                                    <a href="{{dashboardUrl}}" style="
+                                        color: #007bff;
+                                        text-decoration: none;
+                                        font-family: Arial, sans-serif;
+                                        font-size: 13px;
+                                    ">Dashboard</a>
+                                </td>
+                                {{/if}}
+                                
+                                {{#if profileUrl}}
+                                <td style="padding: 0 15px;">
+                                    <a href="{{profileUrl}}" style="
+                                        color: #007bff;
+                                        text-decoration: none;
+                                        font-family: Arial, sans-serif;
+                                        font-size: 13px;
+                                    ">Mi Perfil</a>
+                                </td>
+                                {{/if}}
+                                
+                                {{#if settingsUrl}}
+                                <td style="padding: 0 15px;">
+                                    <a href="{{settingsUrl}}" style="
+                                        color: #007bff;
+                                        text-decoration: none;
+                                        font-family: Arial, sans-serif;
+                                        font-size: 13px;
+                                    ">Configuración</a>
+                                </td>
+                                {{/if}}
+                                
+                                {{#if privacyUrl}}
+                                <td style="padding: 0 15px;">
+                                    <a href="{{privacyUrl}}" style="
+                                        color: #007bff;
+                                        text-decoration: none;
+                                        font-family: Arial, sans-serif;
+                                        font-size: 13px;
+                                    ">Privacidad</a>
+                                </td>
+                                {{/if}}
+                                
+                                {{#if termsUrl}}
+                                <td style="padding: 0 15px;">
+                                    <a href="{{termsUrl}}" style="
+                                        color: #007bff;
+                                        text-decoration: none;
+                                        font-family: Arial, sans-serif;
+                                        font-size: 13px;
+                                    ">Términos</a>
+                                </td>
+                                {{/if}}
+                            </tr>
+                        </table>
+                        
+                    </td>
+                </tr>
+            </table>
+
+            <!-- Otro divisor -->
+            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                    <td style="border-top: 1px solid #dee2e6; padding: 20px 0;">
+                        <!-- Espacio vacío para el divisor -->
+                    </td>
+                </tr>
+            </table>
+            {{/if}}
+
+            <!-- Redes sociales -->
+            {{#if socialMedia}}
+            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                    <td align="center" style="padding-bottom: 20px;">
+                        
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                            <tr>
+                                <td align="center">
+                                    <h5 style="
+                                        color: #495057;
+                                        margin: 0 0 15px 0;
+                                        padding: 0;
+                                        font-family: Arial, sans-serif;
+                                        font-size: 14px;
+                                        font-weight: bold;
+                                    ">
+                                        Síguenos
+                                    </h5>
+                                </td>
+                            </tr>
+                        </table>
+                        
+                        <table border="0" cellpadding="0" cellspacing="0">
+                            <tr>
+                                {{#if socialMedia.facebook}}
+                                <td style="padding: 0 8px;">
+                                    <a href="{{socialMedia.facebook}}" style="
+                                        display: inline-block;
+                                        width: 35px;
+                                        height: 35px;
+                                        background-color: #1877f2;
+                                        color: #ffffff;
+                                        text-decoration: none;
+                                        border-radius: 50%;
+                                        text-align: center;
+                                        line-height: 35px;
+                                        font-size: 18px;
+                                    ">📘</a>
+                                </td>
+                                {{/if}}
+                                
+                                {{#if socialMedia.twitter}}
+                                <td style="padding: 0 8px;">
+                                    <a href="{{socialMedia.twitter}}" style="
+                                        display: inline-block;
+                                        width: 35px;
+                                        height: 35px;
+                                        background-color: #1da1f2;
+                                        color: #ffffff;
+                                        text-decoration: none;
+                                        border-radius: 50%;
+                                        text-align: center;
+                                        line-height: 35px;
+                                        font-size: 18px;
+                                    ">🐦</a>  
+                                </td>
+                                {{/if}}
+                                
+                                {{#if socialMedia.linkedin}}
+                                <td style="padding: 0 8px;">
+                                    <a href="{{socialMedia.linkedin}}" style="
+                                        display: inline-block;
+                                        width: 35px;
+                                        height: 35px;
+                                        background-color: #0077b5;
+                                        color: #ffffff;
+                                        text-decoration: none;
+                                        border-radius: 50%;
+                                        text-align: center;
+                                        line-height: 35px;
+                                        font-size: 18px;
+                                    ">💼</a>
+                                </td>
+                                {{/if}}
+                                
+                                {{#if socialMedia.instagram}}
+                                <td style="padding: 0 8px;">
+                                    <a href="{{socialMedia.instagram}}" style="
+                                        display: inline-block;
+                                        width: 35px;
+                                        height: 35px;
+                                        background-color: #E4405F;
+                                        color: #ffffff;
+                                        text-decoration: none;
+                                        border-radius: 50%;
+                                        text-align: center;
+                                        line-height: 35px;
+                                        font-size: 18px;
+                                    ">📸</a>
+                                </td>
+                                {{/if}}
+                            </tr>
+                        </table>
+                        
+                    </td>
+                </tr>
+            </table>
+
+            <!-- Divisor final -->
+            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                    <td style="border-top: 1px solid #dee2e6; padding: 20px 0;">
+                        <!-- Espacio vacío para el divisor -->
+                    </td>
+                </tr>
+            </table>
+            {{/if}}
+
+            <!-- Información legal y empresa -->
+            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                    <td align="center">
+                        
+                        <!-- Información de la empresa -->
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                            <tr>
+                                <td align="center">
+                                    <p style="
+                                        margin: 5px 0;
+                                        padding: 0;
+                                        font-family: Arial, sans-serif;
+                                        font-size: 12px;
+                                        color: #6c757d;
+                                    ">
+                                        <strong>{{appName}}</strong>
+                                        {{#if appVersion}}v{{appVersion}}{{/if}}
+                                    </p>
+                                </td>
+                            </tr>
+                            
+                            {{#if companyAddress}}
+                            <tr>
+                                <td align="center">
+                                    <p style="
+                                        margin: 5px 0;
+                                        padding: 0;
+                                        font-family: Arial, sans-serif;
+                                        font-size: 12px;
+                                        color: #6c757d;
+                                    ">
+                                        {{companyAddress}}
+                                    </p>
+                                </td>
+                            </tr>
+                            {{/if}}
+                            
+                            <!-- Copyright -->
+                            <tr>
+                                <td align="center">
+                                    <p style="
+                                        margin: 10px 0 5px 0;
+                                        padding: 0;
+                                        font-family: Arial, sans-serif;
+                                        font-size: 12px;
+                                        color: #6c757d;
+                                    ">
+                                        &copy; {{currentYear}} {{appName}}. Todos los derechos reservados.
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                        
+                        <!-- Disclaimer -->
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top: 15px;">
+                            <tr>
+                                <td style="
+                                    background-color: #fff3cd;
+                                    border-left: 4px solid #ffc107;
+                                    padding: 10px;
+                                ">
+                                    <p style="
+                                        margin: 0;
+                                        padding: 0;
+                                        font-family: Arial, sans-serif;
+                                        font-size: 11px;
+                                        color: #856404;
+                                        line-height: 16px;
+                                    ">
+                                        <strong>⚠️ Importante:</strong> Este email fue enviado desde una dirección de solo envío. 
+                                        {{#if supportEmail}}
+                                            Para consultas, contacta a: <a href="mailto:{{supportEmail}}" style="color: #856404;">{{supportEmail}}</a>
+                                        {{/if}}
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                        
+                        <!-- Unsubscribe -->
+                        {{#if unsubscribeUrl}}
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top: 15px;">
+                            <tr>
+                                <td align="center">
+                                    <p style="
+                                        margin: 0;
+                                        padding: 0;
+                                        font-family: Arial, sans-serif;
+                                        font-size: 11px;
+                                        color: #999999;
+                                    ">
+                                        ¿No deseas recibir estos emails? 
+                                        <a href="{{unsubscribeUrl}}" style="color: #999999; text-decoration: underline;">
+                                            Cancelar suscripción
+                                        </a>
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                        {{/if}}
+
+                        <!-- Powered by (opcional) -->
+                        {{#if showPoweredBy}}
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top: 10px;">
+                            <tr>
+                                <td align="center" style="opacity: 0.7;">
+                                    <p style="
+                                        margin: 0;
+                                        padding: 0;
+                                        font-family: Arial, sans-serif;
+                                        font-size: 10px;
+                                        color: #aaaaaa;
+                                    ">
+                                        Powered by {{appName}} Email System
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                        {{/if}}
+                        
+                    </td>
+                </tr>
+            </table>
+            
+        </td>
+    </tr>
+</table>

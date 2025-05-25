@@ -1,10 +1,11 @@
 // src/application/use-cases/user/get-user.use-case.ts
 import { UserRepository } from '../../../domain/repositories/user.repository';
 import { ApplicationError } from '../../../shared/errors/application.error';
-import { GetUserRequestDTO } from '../../dtos/request/user/get-user-request.dto';
 import { UserResponseDTO } from '../../dtos/response/user/user-response.dto';
 import { setupLogger } from '../../../infrastructure/utils/logger';
 import { config } from '../../../infrastructure/database/config/env';
+import { ZodError } from 'zod';
+import { validateUserData } from '../../shemas/user.shemas';
 import { UuidAdapter } from '../../../infrastructure/adaptadores';
 
 /**
@@ -18,32 +19,29 @@ export class GetUserUseCase {
 
   constructor(
     private readonly userRepository: UserRepository,
-    private readonly uuidAdapter: UuidAdapter
+    private readonly uuidAdapter: UuidAdapter,
   ) {}
 
   /**
    * Ejecuta el caso de uso
-   * @param requestDTO DTO con el ID del usuario a obtener
+   * @param rawData Datos sin validar con el ID del usuario
    * @returns Datos del usuario encontrado
    * @throws ApplicationError si el usuario no existe o el ID no es válido
    */
-  async execute(requestDTO: GetUserRequestDTO): Promise<UserResponseDTO> {
+  async execute(rawData: unknown): Promise<UserResponseDTO> {
     try {
-      this.logger.info(`Getting user with ID: ${requestDTO.id}`);
-
-      // Validar que el ID sea un UUID válido
-      if (!this.uuidAdapter.validate(requestDTO.id)) {
-        this.logger.warn(`Invalid user ID format: ${requestDTO.id}`);
-        throw new ApplicationError('Invalid user ID format');
-      }
+      // Validar entrada con Zod
+      const { id } = validateUserData.userIdParam(rawData);
+      
+      this.logger.info(`Getting user with ID: ${id}`);
 
       // Buscar el usuario en el repositorio
-      const user = await this.userRepository.findById(requestDTO.id);
+      const user = await this.userRepository.findById(id);
 
       // Verificar si el usuario existe
       if (!user) {
-        this.logger.warn(`User with ID ${requestDTO.id} not found`);
-        throw new ApplicationError(`User with ID ${requestDTO.id} not found`);
+        this.logger.warn(`User with ID ${id} not found`);
+        throw new ApplicationError(`User with ID ${id} not found`);
       }
 
       this.logger.info(`User found: ${user.id}`);
@@ -60,11 +58,18 @@ export class GetUserUseCase {
         updatedAt: user.updatedAt
       };
     } catch (error) {
+      if (error instanceof ZodError) {
+        const errorMessages = error.errors.map(err => 
+          `${err.path.join('.')}: ${err.message}`
+        ).join(', ');
+        throw new ApplicationError(`Validation failed: ${errorMessages}`);
+      }
+      
       if (error instanceof ApplicationError) {
         throw error;
       }
 
-      this.logger.error(`Error getting user with ID ${requestDTO.id}:`, error);
+      this.logger.error(`Error getting user:`, error);
       throw new ApplicationError(`Error getting user: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }

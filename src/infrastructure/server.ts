@@ -121,7 +121,7 @@ export class Server {
         
         // Rate limiting para prevenir ataques de fuerza bruta
         const limiter = rateLimit({
-            windowMs: Number(config.api.rateLimitWindow) * 60 * 1000, // Convertir minutos a milisegundos
+            windowMs: Number(config.api.rateLimitWindow) * 60 * 1000, 
             max: config.api.rateLimit,
             standardHeaders: true,
             legacyHeaders: false
@@ -140,13 +140,16 @@ export class Server {
         
         // Obtenemos los controladores ya inicializados
         const userController = this.controllerService.getUserController();
+        const emailVerificationController = this.controllerService.getEmailVerificationController();
         
         // Log para verificar que el controlador existe
         this.logger.debug('UserController obtenido:', !!userController);
         
         // Configuramos las rutas con los controladores
         configureRoutes(this.app, {
-            userController
+            userController,
+            emailVerificationController
+            // Agrega aquí otros controladores según sea necesario
         });
         
         this.logger.info('Rutas configuradas correctamente');
