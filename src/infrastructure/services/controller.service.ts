@@ -1,4 +1,4 @@
-// src/infrastructure/services/controller.service.ts
+// src/infrastructure/services/controller.service.ts (actualizado con Auth)
 import { DatabaseManager } from '../../database-manager';
 import setupLogger from '../utils/logger';
 import { config } from '../database/config/env';
@@ -7,16 +7,18 @@ import { BcryptAdapter } from '../adaptadores/encryption/bcrypt.adapter';
 import { JwtTokenAdapter } from '../adaptadores/jwt/jwt.adapter';
 import { NodemailerAdapter } from '../adaptadores/email/nodemailer.adapter';
 import { UserService } from './user.service';
+import { AuthService } from './auth.service';
 import { EmailService } from './email.service';
 import { EmailVerificationService } from './email-verification.service';
 import { UserController } from '../../interfaces/http/controllers/user.controller';
+import { AuthController } from '../../interfaces/http/controllers/auth.controller';
 import { EmailVerificationController } from '../../interfaces/http/controllers/email-verification.controller';
 import { UserRepositoryImpl } from '../repositories/user.repository.impl';
+import { AuthRepositoryImpl } from '../repositories/auth.repository.impl';
 import { EmailVerificationRepositoryImpl } from '../repositories/email-verification.repository.impl';
 import { SendEmailVerificationUseCase } from '../../application/use-case/email-verification/send-email-verification.use-case';
 import { VerifyEmailCodeUseCase } from '../../application/use-case/email-verification/verify-email-code.use-case';
 import { ResendEmailVerificationUseCase } from '../../application/use-case/email-verification/resend-email-verification.use-case';
-
 
 export class ControllerService {
     private static instance: ControllerService;
@@ -32,6 +34,7 @@ export class ControllerService {
     
     // Repositorios
     private userRepository!: UserRepositoryImpl;
+    private authRepository!: AuthRepositoryImpl;
     private emailVerificationRepository!: EmailVerificationRepositoryImpl;
     
     // Casos de uso de verificación de email
@@ -42,10 +45,12 @@ export class ControllerService {
     // Servicios
     private emailService!: EmailService;
     private userService!: UserService;
+    private authService!: AuthService;
     private emailVerificationService!: EmailVerificationService;
     
     // Controladores
     private userController!: UserController;
+    private authController!: AuthController;
     private emailVerificationController!: EmailVerificationController;
     
     private constructor() {
@@ -68,7 +73,6 @@ export class ControllerService {
     
     /**
      * Inicializa el servicio de controladores
-     * Garantiza que la base de datos esté lista antes de inicializar los controladores
      */
     public async initialize(databaseManager: DatabaseManager): Promise<void> {
         if (!databaseManager) {
@@ -94,6 +98,7 @@ export class ControllerService {
         try {
             // Inicializar repositorios
             this.userRepository = new UserRepositoryImpl(this.databaseManager);
+            this.authRepository = new AuthRepositoryImpl(this.databaseManager, this.encryptionAdapter);
             this.emailVerificationRepository = new EmailVerificationRepositoryImpl(this.databaseManager);
             this.logger.info('Repositorios inicializados correctamente');
         } catch (error) {
@@ -105,7 +110,6 @@ export class ControllerService {
         try {
             // Inicializar EmailService primero (usa el patrón singleton)
             this.emailService = EmailService.getInstance();
-            // Configurar el adaptador de email en el servicio
             this.emailService.setAdapter(this.nodemailerAdapter);
             
             // Inicializar casos de uso de verificación de email
@@ -135,13 +139,20 @@ export class ControllerService {
                 this.resendEmailVerificationUseCase
             );
             
-            // Inicializar UserService (mantener los parámetros originales + emailService)
+            // Inicializar UserService
             this.userService = new UserService(
                 this.databaseManager,
                 this.encryptionAdapter,
                 this.uuidAdapter,
                 this.jwtAdapter,
                 this.emailService
+            );
+            
+            // Inicializar AuthService
+            this.authService = new AuthService(
+                this.databaseManager,
+                this.encryptionAdapter,
+                this.jwtAdapter
             );
             
             this.logger.info('Servicios inicializados correctamente');
@@ -154,6 +165,7 @@ export class ControllerService {
         try {
             // Inicializar controladores
             this.userController = new UserController(this.userService);
+            this.authController = new AuthController(this.authService);
             this.emailVerificationController = new EmailVerificationController(this.emailVerificationService);
             this.logger.info('Controladores inicializados correctamente');
         } catch (error) {
@@ -192,6 +204,11 @@ export class ControllerService {
         return this.userRepository;
     }
     
+    public getAuthRepository(): AuthRepositoryImpl {
+        this.ensureInitialized();
+        return this.authRepository;
+    }
+    
     public getEmailVerificationRepository(): EmailVerificationRepositoryImpl {
         this.ensureInitialized();
         return this.emailVerificationRepository;
@@ -224,6 +241,11 @@ export class ControllerService {
         return this.userService;
     }
     
+    public getAuthService(): AuthService {
+        this.ensureInitialized();
+        return this.authService;
+    }
+    
     public getEmailVerificationService(): EmailVerificationService {
         this.ensureInitialized();
         return this.emailVerificationService;
@@ -233,6 +255,11 @@ export class ControllerService {
     public getUserController(): UserController {
         this.ensureInitialized();
         return this.userController;
+    }
+    
+    public getAuthController(): AuthController {
+        this.ensureInitialized();
+        return this.authController;
     }
     
     public getEmailVerificationController(): EmailVerificationController {

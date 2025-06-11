@@ -7,11 +7,13 @@ import helmet from "helmet";
 import cors from "cors";
 import compression from "compression";
 import rateLimit from "express-rate-limit";
+import cookieParser from "cookie-parser";
 import { DatabaseManager } from "../database-manager";
 import setupLogger from "./utils/logger";
 import { config } from "./database/config/env";
 import { ControllerService } from "./services/controller.service";
 import configureRoutes from "./routes";
+import { languageMiddleware } from "./middlewares/language.middleware";
 
 export class Server {
     private app: Application;
@@ -85,12 +87,22 @@ export class Server {
             this.httpServer.listen(port, () => {
                 this.logger.info(`🚀 Servidor HTTP/2 iniciado en el puerto ${port} (${config.app.env})`);
                 this.logger.info(`📚 API disponible en https://localhost:${port}${config.api.prefix}`);
-                this.logger.info(`🩺 Verificación de salud: https://localhost:${port}${config.api.prefix}/health`);
-                this.logger.info(`🛡️ Seguridad: HTTP/2, Helmet y CORS activados`);
+                this.logger.info(`🔐 Autenticación: https://localhost:${port}${config.api.prefix}/auth`);
+                this.logger.info(`👥 Usuarios: https://localhost:${port}${config.api.prefix}/users`);
+                this.logger.info(`✉️ Verificación: https://localhost:${port}${config.api.prefix}/email-verification`);
+                this.logger.info(`🩺 Health Check: https://localhost:${port}${config.api.prefix}/health`);
+                this.logger.info(`🛡️ Seguridad: HTTP/2, Helmet, CORS y JWT activados`);
                 this.logger.info(`🗜️ Optimización: HTTP/2 y compresión habilitados`);
                 this.logger.info(`⚖️ Protección: Rate limiting configurado (${config.api.rateLimit} solicitudes/${config.api.rateLimitWindow})`);
-                this.logger.info(`⏰ Tareas programadas: Limpieza de tokens configurada`);
                 this.logger.info(`🔌 Base de datos: Conexión establecida y monitorizada`);
+                
+                // Mostrar rutas disponibles
+                this.logger.info('📋 Rutas de autenticación disponibles:');
+                this.logger.info(`  POST ${config.api.prefix}/auth/login - Iniciar sesión`);
+                this.logger.info(`  POST ${config.api.prefix}/auth/refresh - Renovar token`);
+                this.logger.info(`  POST ${config.api.prefix}/auth/logout - Cerrar sesión`);
+                this.logger.info(`  GET  ${config.api.prefix}/auth/me - Información del usuario actual`);
+                this.logger.info(`  POST ${config.api.prefix}/auth/verify - Verificar token`);
             });
             
         } catch (error) {
@@ -109,11 +121,17 @@ export class Server {
         this.app.use(cors({
             origin: config.cors.origin,
             methods: config.cors.methods,
-            credentials: true
+            credentials: true // Importante para cookies de autenticación
         }));
+        
+        // Parser de cookies para refresh tokens
+        this.app.use(cookieParser());
         
         // Compresión de respuestas
         this.app.use(compression());
+
+        // Middleware de idioma
+        this.app.use(languageMiddleware);
         
         // Parseo de body en solicitudes
         this.app.use(express.json({ limit: '10mb' }));
@@ -124,13 +142,39 @@ export class Server {
             windowMs: Number(config.api.rateLimitWindow) * 60 * 1000, 
             max: config.api.rateLimit,
             standardHeaders: true,
-            legacyHeaders: false
+            legacyHeaders: false,
+            message: {
+                status: 'error',
+                message: 'Too many requests, please try again later'
+            }
         });
         this.app.use(limiter);
         
+        // Rate limiting más estricto para endpoints de autenticación
+        const authLimiter = rateLimit({
+            windowMs: 15 * 60 * 1000, // 15 minutos
+            max: 10, // Máximo 10 intentos de login por IP cada 15 minutos
+            standardHeaders: true,
+            legacyHeaders: false,
+            message: {
+                status: 'error',
+                message: 'Too many authentication attempts, please try again later'
+            }
+        });
+        this.app.use(`${config.api.prefix}/auth/login`, authLimiter);
+        
         // Logging de solicitudes
         this.app.use((req: Request, _res: Response, next: NextFunction) => {
-            this.logger.info(`${req.method} ${req.url}`);
+            // No loguear contraseñas
+            const logBody = req.path.includes('/login') || req.path.includes('/password') 
+                ? { ...req.body, password: '[HIDDEN]' }
+                : req.body;
+            
+            this.logger.info(`${req.method} ${req.url}`, {
+                ip: req.ip,
+                userAgent: req.get('User-Agent'),
+                body: Object.keys(logBody).length > 0 ? logBody : undefined
+            });
             next();
         });
     }
@@ -140,16 +184,21 @@ export class Server {
         
         // Obtenemos los controladores ya inicializados
         const userController = this.controllerService.getUserController();
+        const authController = this.controllerService.getAuthController();
         const emailVerificationController = this.controllerService.getEmailVerificationController();
         
-        // Log para verificar que el controlador existe
-        this.logger.debug('UserController obtenido:', !!userController);
+        // Log para verificar que los controladores existen
+        this.logger.debug('Controladores obtenidos:', {
+            userController: !!userController,
+            authController: !!authController,
+            emailVerificationController: !!emailVerificationController
+        });
         
         // Configuramos las rutas con los controladores
         configureRoutes(this.app, {
             userController,
+            authController,
             emailVerificationController
-            // Agrega aquí otros controladores según sea necesario
         });
         
         this.logger.info('Rutas configuradas correctamente');
@@ -157,11 +206,25 @@ export class Server {
     
     private setupErrorHandling(): void {
         // Middleware para manejo de errores globales
-        this.app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+        this.app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
             const status = err.status || 500;
             const message = err.message || 'Error interno del servidor';
             
-            this.logger.error(`Error ${status}: ${message}`, err.stack);
+            // No loguear errores de autenticación como errores graves
+            if (status === 401 || status === 403) {
+                this.logger.warn(`Auth error ${status}: ${message}`, {
+                    ip: req.ip,
+                    path: req.path,
+                    method: req.method
+                });
+            } else {
+                this.logger.error(`Error ${status}: ${message}`, {
+                    stack: err.stack,
+                    ip: req.ip,
+                    path: req.path,
+                    method: req.method
+                });
+            }
             
             res.status(status).json({
                 status: 'error',

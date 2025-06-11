@@ -6,6 +6,7 @@ import v1Router from './v1';
 // Interfaz para los controladores inicializados
 interface Controllers {
   userController: any;
+  authController: any;
   emailVerificationController: any;
   // Agrega aquí otros controladores según sea necesario
 }

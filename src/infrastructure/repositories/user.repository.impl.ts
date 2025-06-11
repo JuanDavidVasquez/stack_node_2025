@@ -532,6 +532,43 @@ export class UserRepositoryImpl implements UserRepository {
       throw new InfrastructureError(`Error restoring user: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
+
+  /**
+ * Busca un usuario por su ID incluyendo los registros eliminados (soft delete)
+ * @param id ID del usuario
+ * @returns Usuario encontrado o null si no existe
+ */
+async findByIdIncludingDeleted(id: string): Promise<User | null> {
+  try {
+    this.ensureConnection();
+
+    this.logger.debug(`Finding user by ID including deleted: ${id}`);
+    
+    const userEntity = await this.ormRepository
+      .createQueryBuilder('user')
+      .withDeleted() // Importante: incluir registros eliminados
+      .where('user.id = :id', { id })
+      .getOne();
+
+    return userEntity ? UserMapper.toDomain(userEntity) : null;
+  } catch (error) {
+    // Detectar errores específicos de conexión
+    if (error instanceof Error &&
+      (error.message.includes('ECONNREFUSED') ||
+        error.message.includes('ETIMEDOUT') ||
+        error.message.includes('PROTOCOL_CONNECTION_LOST'))) {
+      this.logger.error(`Database connection error when finding user by ID ${id} including deleted:`, error);
+      throw new InfrastructureError('Database connection failed. Please try again later.');
+    }
+
+    if (error instanceof InfrastructureError) {
+      throw error;
+    }
+
+    this.logger.error(`Error finding user by ID ${id} including deleted:`, error);
+    throw new InfrastructureError(`Error finding user by ID including deleted: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
   /**
    * Actualiza múltiples usuarios en una sola transacción
    * @param users Lista de usuarios a actualizar

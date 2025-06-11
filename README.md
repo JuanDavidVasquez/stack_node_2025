@@ -2,7 +2,7 @@
 
 ## 📋 Descripción
 
-Este proyecto implementa **Clean Architecture** con Node.js, TypeScript, Express y TypeORM, siguiendo los principios de separación de responsabilidades y inversión de dependencias.
+Este proyecto implementa **Clean Architecture** con Node.js, TypeScript, Express y TypeORM, siguiendo los principios de separación de responsabilidades e inversión de dependencias.
 
 ## 🗂️ Estructura de Carpetas
 

@@ -51,8 +51,9 @@ export const CreateUserSchema = z.object({
   password: baseUserValidations.password,
   firstName: baseUserValidations.firstName,
   lastName: baseUserValidations.lastName,
-  role: baseUserValidations.role.optional().default(UserRole.USER)
-}).strict(); // No permite campos adicionales
+  role: baseUserValidations.role.optional().default(UserRole.USER),
+  language: z.enum(['en', 'es']).optional().default('es')
+}).strict();  // No permite campos adicionales
 
 /**
  * Schema para actualizar usuario (todos los campos opcionales)
@@ -85,16 +86,25 @@ export const DeleteUserSchema = z.object({
 
 /**
  * Schema para consultas de usuario (query parameters)
+ * FIXED: Now handles both string and number inputs properly
  */
 export const GetUsersQuerySchema = z.object({
-  page: z.string()
+  page: z.union([z.string(), z.number()])
     .optional()
-    .transform(val => val ? parseInt(val, 10) : 1)
+    .transform(val => {
+      if (val === undefined || val === null) return 1;
+      const num = typeof val === 'string' ? parseInt(val, 10) : val;
+      return isNaN(num) ? 1 : num;
+    })
     .refine(val => val > 0, 'Page must be a positive number'),
   
-  limit: z.string()
+  limit: z.union([z.string(), z.number()])
     .optional()
-    .transform(val => val ? parseInt(val, 10) : 10)
+    .transform(val => {
+      if (val === undefined || val === null) return 10;
+      const num = typeof val === 'string' ? parseInt(val, 10) : val;
+      return isNaN(num) ? 10 : num;
+    })
     .refine(val => val > 0 && val <= 100, 'Limit must be between 1 and 100'),
   
   search: z.string()
@@ -104,9 +114,11 @@ export const GetUsersQuerySchema = z.object({
   
   role: baseUserValidations.role.optional(),
   
-  isActive: z.string()
+  isActive: z.union([z.string(), z.boolean()])
     .optional()
     .transform(val => {
+      if (val === undefined || val === null) return undefined;
+      if (typeof val === 'boolean') return val;
       if (val === 'true') return true;
       if (val === 'false') return false;
       return undefined;

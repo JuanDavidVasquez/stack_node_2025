@@ -61,97 +61,90 @@ export class TemplateService {
   /**
    * Registra helpers personalizados de Handlebars
    */
-  private registerHelpers(): void {
-    // Helper para comparación
-    Handlebars.registerHelper('eq', function(a, b) {
-      return a === b;
-    });
+private registerHelpers(): void {
+  // Helper para comparación
+  Handlebars.registerHelper('eq', function(a, b) {
+    return a === b;
+  });
+  
+  // Helper mejorado para mostrar el tipo de email con icono según idioma
+  Handlebars.registerHelper('emailTypeDisplay', function(emailType: string, language: string = 'es') {
+    if (!emailType) return '';
     
-    // Helper para mostrar el tipo de email con icono
-    Handlebars.registerHelper('emailTypeDisplay', function(emailType: string) {
-      if (!emailType) return '';
-      
-      const types: Record<string, string> = {
-        'verification': '📧 VERIFICACIÓN DE CUENTA',
-        'welcome': '🎉 BIENVENIDA',
-        'password-reset': '🔑 RECUPERACIÓN DE CONTRASEÑA',
-        'notification': '🔔 NOTIFICACIÓN',
-        'admin': '⚙️ ADMINISTRACIÓN'
-      };
-      
-      return types[emailType as string] || `📩 ${emailType.toUpperCase()}`;
-    });
+    const typesEs: Record<string, string> = {
+      'verification': '📧 VERIFICACIÓN DE CUENTA',
+      'welcome': '🎉 BIENVENIDA',
+      'password-reset': '🔑 RECUPERACIÓN DE CONTRASEÑA',
+      'notification': '🔔 NOTIFICACIÓN',
+      'admin': '⚙️ ADMINISTRACIÓN'
+    };
     
-    // Helper para substring
-    Handlebars.registerHelper('substring', (str: string, start: number, end?: number) => {
-      if (typeof str !== 'string') return '';
-      if (end !== undefined) {
-        return str.substring(start, end);
-      } else {
-        return str.substring(start);
-      }
+    const typesEn: Record<string, string> = {
+      'verification': '📧 ACCOUNT VERIFICATION',
+      'welcome': '🎉 WELCOME',
+      'password-reset': '🔑 PASSWORD RECOVERY',
+      'notification': '🔔 NOTIFICATION',
+      'admin': '⚙️ ADMINISTRATION'
+    };
+    
+    const types = language === 'en' ? typesEn : typesEs;
+    return types[emailType as string] || `📩 ${emailType.toUpperCase()}`;
+  });
+  
+  // Resto de helpers...
+  Handlebars.registerHelper('substring', (str: string, start: number, end?: number) => {
+    if (typeof str !== 'string') return '';
+    if (end !== undefined) {
+      return str.substring(start, end);
+    } else {
+      return str.substring(start);
+    }
+  });
+
+  Handlebars.registerHelper('getInitials', (name: string) => {
+    if (typeof name !== 'string') return '';
+    return name
+      .split(' ')
+      .map(word => word.charAt(0))
+      .join('')
+      .substring(0, 2)
+      .toUpperCase();
+  });
+
+  Handlebars.registerHelper('or', (a, b) => a || b);
+
+  // Helper mejorado para formatear fechas según idioma
+  Handlebars.registerHelper('formatDate', (date: Date | string, language: string = 'es') => {
+    if (!date) return '';
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    const locale = language === 'en' ? 'en-US' : 'es-ES';
+    return dateObj.toLocaleDateString(locale, {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
     });
+  });
 
-    // Helper adicional para obtener iniciales
-    Handlebars.registerHelper('getInitials', (name: string) => {
-      if (typeof name !== 'string') return '';
-      return name
-        .split(' ')
-        .map(word => word.charAt(0))
-        .join('')
-        .substring(0, 2)
-        .toUpperCase();
+  Handlebars.registerHelper('formatDateTime', (date: Date | string, language: string = 'es') => {
+    if (!date) return '';
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    const locale = language === 'en' ? 'en-US' : 'es-ES';
+    return dateObj.toLocaleDateString(locale, {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
     });
+  });
 
-    // Helper para OR lógico
-    Handlebars.registerHelper('or', (a, b) => a || b);
+  Handlebars.registerHelper('capitalize', (str: string) => {
+    if (typeof str !== 'string') return '';
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  });
 
-    // Helper para formatear fechas
-    Handlebars.registerHelper('formatDate', (date: Date | string, format: string = 'es-ES') => {
-      if (!date) return '';
-      const dateObj = typeof date === 'string' ? new Date(date) : date;
-      return dateObj.toLocaleDateString(format, {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      });
-    });
-
-    // Helper para formatear fecha y hora
-    Handlebars.registerHelper('formatDateTime', (date: Date | string, format: string = 'es-ES') => {
-      if (!date) return '';
-      const dateObj = typeof date === 'string' ? new Date(date) : date;
-      return dateObj.toLocaleDateString(format, {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-    });
-
-    // Helper para formatear fecha y hora en formato 12 horas
-    Handlebars.registerHelper('formatDateTime12', (date: Date | string, format: string = 'es-ES') => {
-      if (!date) return '';
-      const dateObj = typeof date === 'string' ? new Date(date) : date;
-      return dateObj.toLocaleDateString(format, {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true
-      });
-    });
-
-    // Helper para capitalizar texto
-    Handlebars.registerHelper('capitalize', (str: string) => {
-      if (typeof str !== 'string') return '';
-      return str.charAt(0).toUpperCase() + str.slice(1);
-    });
-
-    this.logger.debug('Handlebars helpers registered');
-  }
+  this.logger.debug('Handlebars helpers registered with language support');
+}
 
   /**
    * Registra partials de Handlebars

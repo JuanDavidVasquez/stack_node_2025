@@ -1,6 +1,9 @@
 // src/infrastructure/routes/v1/user.routes.ts
 import { Router } from 'express';
 import { UserController } from '../../../interfaces/http/controllers/user.controller';
+import { authMiddleware } from '../../middlewares/validation/auth.middleware';
+import { roleMiddleware } from '../../middlewares/role.middleware';
+import { UserRole } from '../../../shared/constants/roles';
 
 
 /**
@@ -11,11 +14,28 @@ import { UserController } from '../../../interfaces/http/controllers/user.contro
 export default function userRoutes(userController: UserController): Router {
   const router = Router();
 
-  router.get('/', userController.getUsers);
-  router.post('/', userController.createUser);
-  router.get('/:id', userController.getUserById);
-  router.put('/:id', userController.updateUser);
-  router.delete('/:id', userController.deleteUser);
+  router.get('/',
+    authMiddleware,
+    roleMiddleware(UserRole.ADMIN),
+    userController.getUsers);
+  router.post('/',
+    userController.createUser);
+  router.get('/:id',
+    authMiddleware,
+    roleMiddleware(UserRole.ADMIN),
+    userController.getUserById);
+  router.put('/:id',
+    authMiddleware,
+    roleMiddleware(UserRole.ADMIN),
+    userController.updateUser);
+  router.delete('/:id',
+    authMiddleware,
+    roleMiddleware(UserRole.ADMIN),
+    userController.deleteUser);
+  router.patch('/:id/restore',
+    authMiddleware,
+    roleMiddleware(UserRole.ADMIN),
+    userController.restoreUser);
 
   return router;
 }

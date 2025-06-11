@@ -10,7 +10,6 @@ declare global {
             email: string;
             role: string;
             verifiedAt?: Date | null;
-            [key: string]: any;
         }
         interface Request {
             user?: User;
@@ -31,6 +30,7 @@ import { InfrastructureError } from '../../shared/errors/infrastructure.error';
 import { UserRole } from '../../shared/constants/roles';
 import { User } from '../../domain/entities/user.entity';
 import { EmailService } from './email.service';
+import { setLanguage, SupportedLanguage, t } from '../../shared/i18n';
 
 export class UserService {
     private readonly logger = setupLogger({
@@ -76,67 +76,70 @@ export class UserService {
     /**
      * Crea un nuevo usuario
      */
-    public async createUser(req: Request, res: Response, next: NextFunction): Promise<void> {
-        try {
-            this.logger.debug('Request to create user:', req.body);
+  public async createUser(req: Request, res: Response, next: NextFunction, language: SupportedLanguage = 'es'): Promise<void> {
+  try {
+    this.logger.debug('Request to create user:', req.body);
+    
+    // ESTABLECER IDIOMA GLOBALMENTE
+    setLanguage(language);
+    
+    const createUserDTO: CreateUserRequestDTO = {
+      email: req.body.email,
+      password: req.body.password,
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      role: req.body.role,
+      language: req.body.language || language 
+    };
 
-            // Mapear los datos de la solicitud HTTP al DTO de aplicación
-            const createUserDTO: CreateUserRequestDTO = {
-                email: req.body.email,
-                password: req.body.password,
-                firstName: req.body.firstName,
-                lastName: req.body.lastName,
-                role: req.body.role
-            };
+    // PASAR EL IDIOMA AL CASO DE USO
+    const user = await this.createUserUseCase.execute(createUserDTO, language);
 
-            // Ejecutar el caso de uso
-            const user = await this.createUserUseCase.execute(createUserDTO);
+    // Generar token JWT para el usuario creado
+    const payload = {
+      sub: user.id,
+      email: user.email,
+      role: user.role,
+      firstName: user.firstName,
+      lastName: user.lastName
+    };
 
-            // Generar token JWT para el usuario creado
-            const payload = {
-                sub: user.id,
-                email: user.email,
-                role: user.role,
-                firstName: user.firstName,
-                lastName: user.lastName
-            };
+    const tokens = await this.jwtAdapter.generateTokenPair(payload);
 
-            const tokens = await this.jwtAdapter.generateTokenPair(payload);
+    // Responder al cliente
+    res.status(201).json({
+      status: 'success',
+      message: 'User created successfully',
+      data: {
+        user: {
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          role: user.role,
+          isActive: user.isActive,
+          createdAt: user.createdAt
+        },
+        tokens
+      }
+    });
+  } catch (error) {
+    this.logger.error('Error in createUser service:', error);
 
-            // Responder al cliente
-            res.status(201).json({
-                status: 'success',
-                message: 'User created successfully',
-                data: {
-                    user: {
-                        id: user.id,
-                        email: user.email,
-                        firstName: user.firstName,
-                        lastName: user.lastName,
-                        role: user.role,
-                        isActive: user.isActive,
-                        createdAt: user.createdAt
-                    },
-                    tokens
-                }
-            });
-        } catch (error) {
-            this.logger.error('Error in createUser service:', error);
+    if (error instanceof ApplicationError ||
+        error instanceof DomainError ||
+        error instanceof InfrastructureError) {
 
-            if (error instanceof ApplicationError ||
-                error instanceof DomainError ||
-                error instanceof InfrastructureError) {
-
-                res.status(400).json({
-                    status: 'error',
-                    message: error.message
-                });
-                return;
-            }
-
-            next(error);
-        }
+      res.status(400).json({
+        status: 'error',
+        message: t('errors.userCreationFailed', {}, language) // Usar el idioma correcto
+      });
+      return;
     }
+
+    next(error);
+  }
+}
 
     /**
      * Obtiene un listado paginado de usuarios con filtros opcionales
@@ -379,62 +382,73 @@ export class UserService {
         }
     }
 
-    /**
-     * Restaura un usuario previamente eliminado (soft delete)
-     */
-    public async restoreUser(req: Request, res: Response, next: NextFunction): Promise<void> {
-        try {
-            this.logger.debug(`Request to restore user ID: ${req.params.id}`);
+/**
+ * Restaura un usuario previamente eliminado (soft delete)
+ */
+public async restoreUser(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+        this.logger.debug(`Request to restore user ID: ${req.params.id}`);
 
-            // Verificar que el ID existe en la ruta
-            if (!req.params.id) {
-                throw new ApplicationError('User ID is required');
-            }
-
-            // Intentar restaurar el usuario
-            await this.userRepository.restore(req.params.id);
-
-            // Obtener el usuario restaurado
-            const restoredUser = await this.userRepository.findById(req.params.id);
-            if (!restoredUser) {
-                throw new InfrastructureError('User was not properly restored');
-            }
-
-            // Responder al cliente
-            res.status(200).json({
-                status: 'success',
-                message: 'User restored successfully',
-                data: {
-                    user: {
-                        id: restoredUser.id,
-                        email: restoredUser.email,
-                        firstName: restoredUser.firstName,
-                        lastName: restoredUser.lastName,
-                        role: restoredUser.role,
-                        isActive: restoredUser.isActive,
-                        createdAt: restoredUser.createdAt,
-                        updatedAt: restoredUser.updatedAt
-                    }
-                }
-            });
-        } catch (error) {
-            this.logger.error('Error in restoreUser service:', error);
-
-            if (error instanceof ApplicationError ||
-                error instanceof DomainError ||
-                error instanceof InfrastructureError) {
-
-                const statusCode = error.message.includes('not found') ? 404 : 400;
-                res.status(statusCode).json({
-                    status: 'error',
-                    message: error.message
-                });
-                return;
-            }
-
-            next(error);
+        // Verificar que el ID existe en la ruta
+        if (!req.params.id) {
+            throw new ApplicationError('User ID is required');
         }
+
+        // Verificar que el usuario existe (incluyendo eliminados) antes de restaurar
+        const existingUser = await this.userRepository.findByIdIncludingDeleted(req.params.id);
+        if (!existingUser) {
+            throw new ApplicationError(`User with ID ${req.params.id} not found`);
+        }
+
+        // Verificar que el usuario esté realmente eliminado
+        if (!existingUser.deletedAt) {
+            throw new ApplicationError(`User with ID ${req.params.id} is not deleted and cannot be restored`);
+        }
+
+        // Intentar restaurar el usuario
+        await this.userRepository.restore(req.params.id);
+
+        // Obtener el usuario restaurado (ahora usando findById normal ya que fue restaurado)
+        const restoredUser = await this.userRepository.findById(req.params.id);
+        if (!restoredUser) {
+            throw new InfrastructureError('User was not properly restored');
+        }
+
+        // Responder al cliente
+        res.status(200).json({
+            status: 'success',
+            message: 'User restored successfully',
+            data: {
+                user: {
+                    id: restoredUser.id,
+                    email: restoredUser.email,
+                    firstName: restoredUser.firstName,
+                    lastName: restoredUser.lastName,
+                    role: restoredUser.role,
+                    isActive: restoredUser.isActive,
+                    createdAt: restoredUser.createdAt,
+                    updatedAt: restoredUser.updatedAt
+                }
+            }
+        });
+    } catch (error) {
+        this.logger.error('Error in restoreUser service:', error);
+
+        if (error instanceof ApplicationError ||
+            error instanceof DomainError ||
+            error instanceof InfrastructureError) {
+
+            const statusCode = error.message.includes('not found') ? 404 : 400;
+            res.status(statusCode).json({
+                status: 'error',
+                message: error.message
+            });
+            return;
+        }
+
+        next(error);
     }
+}
 
     /**
      * Realiza una eliminación permanente del usuario (solo para admin)
