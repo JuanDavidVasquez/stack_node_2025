@@ -20,6 +20,7 @@ export interface PaginatedResult<T> {
 export abstract class UserRepository {
   // Métodos para buscar un usuario específico (no necesitan paginación)
   abstract findById(id: string): Promise<User | null>;
+  abstract findByIdIncludingDeleted(id: string): Promise<User | null>;
   abstract findByEmail(email: string): Promise<User | null>;
   abstract findByVerificationCode(code: string): Promise<User | null>;
   

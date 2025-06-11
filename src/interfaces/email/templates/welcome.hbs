@@ -1,6 +1,5 @@
-<!-- src/interfaces/email/templates/welcome.hbs -->
+<!-- src/interfaces/email/templates/welcome.hbs - Internationalizada -->
 
-<!-- Saludo personalizado con celebración -->
 <table border="0" cellpadding="0" cellspacing="0" width="100%">
     <tr>
         <td style="padding-bottom: 30px;" align="center">
@@ -13,7 +12,7 @@
                 color: #28a745;
                 text-align: center;
             ">
-                🎉 ¡Bienvenido {{#if firstName}}{{firstName}}{{/if}}!
+                🎉 {{#if welcome.title}}{{welcome.title}}{{else}}¡Bienvenido {{#if firstName}}{{firstName}}{{/if}}!{{/if}}
             </h1>
             
             <p style="
@@ -25,7 +24,7 @@
                 line-height: 28px;
                 text-align: center;
             ">
-                Tu cuenta en <strong>{{appName}}</strong> está lista 
+                {{#if welcome.subtitle}}{{welcome.subtitle}}{{else}}Tu cuenta en <strong>{{appName}}</strong> está lista{{/if}}
             </p>
         </td>
     </tr>
@@ -43,8 +42,8 @@
                 color: #333333;
                 line-height: 24px;
             ">
-                Gracias por unirte a nuestra comunidad. Estamos emocionados de tenerte como parte de {{appName}} 
-                y queremos asegurarnos de que tengas la mejor experiencia posible desde el primer día.
+                {{#if welcome.thankYou}}{{welcome.thankYou}}{{else}}Gracias por unirte a nuestra comunidad. Estamos emocionados de tenerte como parte de {{appName}} 
+                y queremos asegurarnos de que tengas la mejor experiencia posible desde el primer día.{{/if}}
             </p>
             
             <p style="
@@ -55,7 +54,7 @@
                 color: #333333;
                 line-height: 24px;
             ">
-                Tu cuenta ha sido verificada exitosamente y ya puedes comenzar a explorar todas nuestras funcionalidades.
+                {{#if welcome.accountVerified}}{{welcome.accountVerified}}{{else}}Tu cuenta ha sido verificada exitosamente y ya puedes comenzar a explorar todas nuestras funcionalidades.{{/if}}
             </p>
         </td>
     </tr>
@@ -82,7 +81,7 @@
                             font-weight: bold;
                             color: #495057;
                         ">
-                            👤 Información de tu cuenta
+                            👤 {{#if welcome.accountInfo.title}}{{welcome.accountInfo.title}}{{else}}Información de tu cuenta{{/if}}
                         </h3>
                         
                         <table border="0" cellpadding="0" cellspacing="0" width="100%">
@@ -93,7 +92,7 @@
                                         font-family: Arial, sans-serif;
                                         font-size: 14px;
                                         color: #6c757d;
-                                    ">Email:</strong>
+                                    ">{{#if welcome.accountInfo.email}}{{welcome.accountInfo.email}}{{else}}Email:{{/if}}</strong>
                                 </td>
                                 <td style="padding: 5px 0;">
                                     <span style="
@@ -112,7 +111,7 @@
                                         font-family: Arial, sans-serif;
                                         font-size: 14px;
                                         color: #6c757d;
-                                    ">Nombre:</strong>
+                                    ">{{#if welcome.accountInfo.name}}{{welcome.accountInfo.name}}{{else}}Nombre:{{/if}}</strong>
                                 </td>
                                 <td style="padding: 5px 0;">
                                     <span style="
@@ -131,7 +130,7 @@
                                         font-family: Arial, sans-serif;
                                         font-size: 14px;
                                         color: #6c757d;
-                                    ">Tipo de cuenta:</strong>
+                                    ">{{#if welcome.accountInfo.accountType}}{{welcome.accountInfo.accountType}}{{else}}Tipo de cuenta:{{/if}}</strong>
                                 </td>
                                 <td style="padding: 5px 0;">
                                     <span style="
@@ -151,7 +150,7 @@
                                         font-family: Arial, sans-serif;
                                         font-size: 14px;
                                         color: #6c757d;
-                                    ">Fecha de registro:</strong>
+                                    ">{{#if welcome.accountInfo.registrationDate}}{{welcome.accountInfo.registrationDate}}{{else}}Fecha de registro:{{/if}}</strong>
                                 </td>
                                 <td style="padding: 5px 0;">
                                     <span style="
@@ -184,210 +183,148 @@
                 color: #2c3e50;
                 text-align: center;
             ">
-                🚀 ¿Por dónde empezar?
+                🚀 {{#if welcome.getStarted.title}}{{welcome.getStarted.title}}{{else}}¿Por dónde empezar?{{/if}}
             </h3>
             
             <!-- Lista de pasos -->
             <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                {{#if steps}}
-                    {{#each steps}}
-                    <tr>
-                        <td style="padding: 15px 0; border-bottom: 1px solid #e9ecef;">
-                            <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                                <tr>
-                                    <td style="width: 40px; vertical-align: top; padding-right: 15px;">
-                                        <div style="
-                                            width: 30px;
-                                            height: 30px;
-                                            background-color: #007bff;
-                                            color: #ffffff;
-                                            border-radius: 50%;
-                                            text-align: center;
-                                            line-height: 30px;
-                                            font-family: Arial, sans-serif;
-                                            font-size: 14px;
-                                            font-weight: bold;
-                                        ">
-                                            {{@index}}
-                                        </div>
-                                    </td>
-                                    <td style="vertical-align: top;">
-                                        <h4 style="
-                                            margin: 0 0 8px 0;
-                                            padding: 0;
-                                            font-family: Arial, sans-serif;
-                                            font-size: 16px;
-                                            font-weight: bold;
-                                            color: #2c3e50;
-                                        ">
-                                            {{#if this.icon}}{{this.icon}} {{/if}}{{this.title}}
-                                        </h4>
-                                        
-                                        <p style="
-                                            margin: 0 0 10px 0;
-                                            padding: 0;
-                                            font-family: Arial, sans-serif;
-                                            font-size: 14px;
-                                            color: #6c757d;
-                                            line-height: 20px;
-                                        ">
-                                            {{this.description}}
-                                        </p>
-                                        
-                                        {{#if this.actionUrl}}
-                                        <a href="{{this.actionUrl}}" style="
-                                            color: #007bff;
-                                            text-decoration: none;
-                                            font-family: Arial, sans-serif;
-                                            font-size: 14px;
-                                            font-weight: bold;
-                                        ">
-                                            {{this.actionText}} →
-                                        </a>
-                                        {{/if}}
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                    {{/each}}
-                {{else}}
-                    <!-- Pasos por defecto -->
-                    <tr>
-                        <td style="padding: 15px 0; border-bottom: 1px solid #e9ecef;">
-                            <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                                <tr>
-                                    <td style="width: 40px; vertical-align: top; padding-right: 15px;">
-                                        <div style="
-                                            width: 30px;
-                                            height: 30px;
-                                            background-color: #007bff;
-                                            color: #ffffff;
-                                            border-radius: 50%;
-                                            text-align: center;
-                                            line-height: 30px;
-                                            font-family: Arial, sans-serif;
-                                            font-size: 14px;
-                                            font-weight: bold;
-                                        ">1</div>
-                                    </td>
-                                    <td style="vertical-align: top;">
-                                        <h4 style="
-                                            margin: 0 0 8px 0;
-                                            padding: 0;
-                                            font-family: Arial, sans-serif;
-                                            font-size: 16px;
-                                            font-weight: bold;
-                                            color: #2c3e50;
-                                        ">
-                                            🏠 Explora tu dashboard
-                                        </h4>
-                                        <p style="
-                                            margin: 0;
-                                            padding: 0;
-                                            font-family: Arial, sans-serif;
-                                            font-size: 14px;
-                                            color: #6c757d;
-                                            line-height: 20px;
-                                        ">
-                                            Familiarízate con la interfaz y descubre todas las funcionalidades disponibles.
-                                        </p>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                    
-                    <tr>
-                        <td style="padding: 15px 0; border-bottom: 1px solid #e9ecef;">
-                            <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                                <tr>
-                                    <td style="width: 40px; vertical-align: top; padding-right: 15px;">
-                                        <div style="
-                                            width: 30px;
-                                            height: 30px;
-                                            background-color: #007bff;
-                                            color: #ffffff;
-                                            border-radius: 50%;
-                                            text-align: center;
-                                            line-height: 30px;
-                                            font-family: Arial, sans-serif;
-                                            font-size: 14px;
-                                            font-weight: bold;
-                                        ">2</div>
-                                    </td>
-                                    <td style="vertical-align: top;">
-                                        <h4 style="
-                                            margin: 0 0 8px 0;
-                                            padding: 0;
-                                            font-family: Arial, sans-serif;
-                                            font-size: 16px;
-                                            font-weight: bold;
-                                            color: #2c3e50;
-                                        ">
-                                            ⚙️ Personaliza tu perfil
-                                        </h4>
-                                        <p style="
-                                            margin: 0;
-                                            padding: 0;
-                                            font-family: Arial, sans-serif;
-                                            font-size: 14px;
-                                            color: #6c757d;
-                                            line-height: 20px;
-                                        ">
-                                            Agrega tu foto, completa tu información y configura tus preferencias.
-                                        </p>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                    
-                    <tr>
-                        <td style="padding: 15px 0;">
-                            <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                                <tr>
-                                    <td style="width: 40px; vertical-align: top; padding-right: 15px;">
-                                        <div style="
-                                            width: 30px;
-                                            height: 30px;
-                                            background-color: #007bff;
-                                            color: #ffffff;
-                                            border-radius: 50%;
-                                            text-align: center;
-                                            line-height: 30px;
-                                            font-family: Arial, sans-serif;
-                                            font-size: 14px;
-                                            font-weight: bold;
-                                        ">3</div>
-                                    </td>
-                                    <td style="vertical-align: top;">
-                                        <h4 style="
-                                            margin: 0 0 8px 0;
-                                            padding: 0;
-                                            font-family: Arial, sans-serif;
-                                            font-size: 16px;
-                                            font-weight: bold;
-                                            color: #2c3e50;
-                                        ">
-                                            🎯 Comienza a usar la plataforma
-                                        </h4>
-                                        <p style="
-                                            margin: 0;
-                                            padding: 0;
-                                            font-family: Arial, sans-serif;
-                                            font-size: 14px;
-                                            color: #6c757d;
-                                            line-height: 20px;
-                                        ">
-                                            Empieza a aprovechar todas las herramientas y servicios que tenemos para ti.
-                                        </p>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                {{/if}}
+                <!-- Paso 1 -->
+                <tr>
+                    <td style="padding: 15px 0; border-bottom: 1px solid #e9ecef;">
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                            <tr>
+                                <td style="width: 40px; vertical-align: top; padding-right: 15px;">
+                                    <div style="
+                                        width: 30px;
+                                        height: 30px;
+                                        background-color: #007bff;
+                                        color: #ffffff;
+                                        border-radius: 50%;
+                                        text-align: center;
+                                        line-height: 30px;
+                                        font-family: Arial, sans-serif;
+                                        font-size: 14px;
+                                        font-weight: bold;
+                                    ">1</div>
+                                </td>
+                                <td style="vertical-align: top;">
+                                    <h4 style="
+                                        margin: 0 0 8px 0;
+                                        padding: 0;
+                                        font-family: Arial, sans-serif;
+                                        font-size: 16px;
+                                        font-weight: bold;
+                                        color: #2c3e50;
+                                    ">
+                                        🏠 {{#if welcome.getStarted.step1.title}}{{welcome.getStarted.step1.title}}{{else}}Explora tu dashboard{{/if}}
+                                    </h4>
+                                    <p style="
+                                        margin: 0;
+                                        padding: 0;
+                                        font-family: Arial, sans-serif;
+                                        font-size: 14px;
+                                        color: #6c757d;
+                                        line-height: 20px;
+                                    ">
+                                        {{#if welcome.getStarted.step1.description}}{{welcome.getStarted.step1.description}}{{else}}Familiarízate con la interfaz y descubre todas las funcionalidades disponibles.{{/if}}
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                
+                <!-- Paso 2 -->
+                <tr>
+                    <td style="padding: 15px 0; border-bottom: 1px solid #e9ecef;">
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                            <tr>
+                                <td style="width: 40px; vertical-align: top; padding-right: 15px;">
+                                    <div style="
+                                        width: 30px;
+                                        height: 30px;
+                                        background-color: #007bff;
+                                        color: #ffffff;
+                                        border-radius: 50%;
+                                        text-align: center;
+                                        line-height: 30px;
+                                        font-family: Arial, sans-serif;
+                                        font-size: 14px;
+                                        font-weight: bold;
+                                    ">2</div>
+                                </td>
+                                <td style="vertical-align: top;">
+                                    <h4 style="
+                                        margin: 0 0 8px 0;
+                                        padding: 0;
+                                        font-family: Arial, sans-serif;
+                                        font-size: 16px;
+                                        font-weight: bold;
+                                        color: #2c3e50;
+                                    ">
+                                        ⚙️ {{#if welcome.getStarted.step2.title}}{{welcome.getStarted.step2.title}}{{else}}Personaliza tu perfil{{/if}}
+                                    </h4>
+                                    <p style="
+                                        margin: 0;
+                                        padding: 0;
+                                        font-family: Arial, sans-serif;
+                                        font-size: 14px;
+                                        color: #6c757d;
+                                        line-height: 20px;
+                                    ">
+                                        {{#if welcome.getStarted.step2.description}}{{welcome.getStarted.step2.description}}{{else}}Agrega tu foto, completa tu información y configura tus preferencias.{{/if}}
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                
+                <!-- Paso 3 -->
+                <tr>
+                    <td style="padding: 15px 0;">
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                            <tr>
+                                <td style="width: 40px; vertical-align: top; padding-right: 15px;">
+                                    <div style="
+                                        width: 30px;
+                                        height: 30px;
+                                        background-color: #007bff;
+                                        color: #ffffff;
+                                        border-radius: 50%;
+                                        text-align: center;
+                                        line-height: 30px;
+                                        font-family: Arial, sans-serif;
+                                        font-size: 14px;
+                                        font-weight: bold;
+                                    ">3</div>
+                                </td>
+                                <td style="vertical-align: top;">
+                                    <h4 style="
+                                        margin: 0 0 8px 0;
+                                        padding: 0;
+                                        font-family: Arial, sans-serif;
+                                        font-size: 16px;
+                                        font-weight: bold;
+                                        color: #2c3e50;
+                                    ">
+                                        🎯 {{#if welcome.getStarted.step3.title}}{{welcome.getStarted.step3.title}}{{else}}Comienza a usar la plataforma{{/if}}
+                                    </h4>
+                                    <p style="
+                                        margin: 0;
+                                        padding: 0;
+                                        font-family: Arial, sans-serif;
+                                        font-size: 14px;
+                                        color: #6c757d;
+                                        line-height: 20px;
+                                    ">
+                                        {{#if welcome.getStarted.step3.description}}{{welcome.getStarted.step3.description}}{{else}}Empieza a aprovechar todas las herramientas y servicios que tenemos para ti.{{/if}}
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
             </table>
         </td>
     </tr>
@@ -400,7 +337,7 @@
         <td style="padding: 30px 0;" align="center">
             {{> button 
                 url=primaryActionUrl 
-                text=(or primaryActionText "🚀 Ir a mi cuenta")
+                text=(or welcome.primaryButton "🚀 Ir a mi cuenta")
                 backgroundColor="#007bff"
                 textColor="#ffffff"
                 width="280"
@@ -410,57 +347,6 @@
                 borderRadius="8"
                 margin="10px 0"
             }}
-        </td>
-    </tr>
-</table>
-{{/if}}
-
-<!-- Recursos útiles -->
-{{#if resources}}
-<table border="0" cellpadding="0" cellspacing="0" width="100%">
-    <tr>
-        <td style="padding: 30px 0 20px 0;">
-            <h3 style="
-                margin: 0 0 20px 0;
-                padding: 0;
-                font-family: Arial, sans-serif;
-                font-size: 20px;
-                font-weight: bold;
-                color: #2c3e50;
-                text-align: center;
-            ">
-                📚 Recursos útiles
-            </h3>
-            
-            <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                <tr>
-                    <td align="center">
-                        {{#each resources}}
-                        <table border="0" cellpadding="0" cellspacing="0" style="margin: 0 10px 15px 10px; display: inline-block;">
-                            <tr>
-                                <td>
-                                    <a href="{{this.url}}" style="
-                                        display: inline-block;
-                                        background-color: #f8f9fa;
-                                        border: 1px solid #e9ecef;
-                                        border-radius: 6px;
-                                        color: #495057;
-                                        font-family: Arial, sans-serif;
-                                        font-size: 14px;
-                                        font-weight: 500;
-                                        padding: 12px 20px;
-                                        text-decoration: none;
-                                        transition: all 0.2s;
-                                    ">
-                                        {{#if this.icon}}{{this.icon}} {{/if}}{{this.title}}
-                                    </a>
-                                </td>
-                            </tr>
-                        </table>
-                        {{/each}}
-                    </td>
-                </tr>
-            </table>
         </td>
     </tr>
 </table>
@@ -487,7 +373,7 @@
                             font-weight: bold;
                             color: #0c5460;
                         ">
-                            💬 ¿Necesitas ayuda?
+                            💬 {{#if welcome.support.title}}{{welcome.support.title}}{{else}}¿Necesitas ayuda?{{/if}}
                         </h4>
                         
                         <p style="
@@ -498,11 +384,11 @@
                             color: #0c5460;
                             line-height: 20px;
                         ">
-                            Nuestro equipo de soporte está aquí para ayudarte. Si tienes preguntas o necesitas asistencia, 
+                            {{#if welcome.support.message}}{{welcome.support.message}}{{else}}Nuestro equipo de soporte está aquí para ayudarte. Si tienes preguntas o necesitas asistencia,{{/if}}
                             {{#if supportEmail}}
-                                contáctanos en <a href="mailto:{{supportEmail}}" style="color: #0c5460; font-weight: bold;">{{supportEmail}}</a>
+                                {{#if welcome.support.contactUs}}{{welcome.support.contactUs}}{{else}}contáctanos en{{/if}} <a href="mailto:{{supportEmail}}" style="color: #0c5460; font-weight: bold;">{{supportEmail}}</a>
                             {{else}}
-                                no dudes en contactarnos
+                                {{#if welcome.support.orContact}}{{welcome.support.orContact}}{{else}}no dudes en contactarnos{{/if}}
                             {{/if}}
                         </p>
                     </td>
@@ -525,13 +411,12 @@
                 line-height: 24px;
                 text-align: center;
             ">
-                Una vez más, <strong>¡bienvenido a {{appName}}!</strong><br>
-                Estamos emocionados de acompañarte en este viaje.
+                {{#if welcome.closing}}{{welcome.closing}}{{else}}Una vez más, <strong>¡bienvenido a {{appName}}!</strong><br>
+                Estamos emocionados de acompañarte en este viaje.{{/if}}
             </p>
         </td>
     </tr>
 </table>
-
 <!-- Firma -->
 <table border="0" cellpadding="0" cellspacing="0" width="100%">
     <tr>

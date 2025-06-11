@@ -1,9 +1,11 @@
-// src/infrastructure/database/entities/user.typeorm.entity.ts (corregido final)
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from 'typeorm';
+// src/infrastructure/database/entities/user.typeorm.entity.ts
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, Index } from 'typeorm';
 import { UserRole } from '../../../shared/constants/roles';
 
-
 @Entity('users')
+@Index(['email'], { unique: true })
+@Index(['lastLoginAt'])
+@Index(['lockedUntil'])
 export class UserTypeOrmEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
@@ -39,12 +41,33 @@ export class UserTypeOrmEntity {
   })
   verificationCode?: string | null;
 
-  @CreateDateColumn()
+  // Campos de autenticación
+  @Column({ 
+    type: 'datetime', 
+    nullable: true,
+    name: 'last_login_at'
+  })
+  lastLoginAt?: Date | null;
+
+  @Column({ 
+    default: 0,
+    name: 'login_attempts'
+  })
+  loginAttempts!: number;
+
+  @Column({ 
+    type: 'datetime', 
+    nullable: true,
+    name: 'locked_until'
+  })
+  lockedUntil?: Date | null;
+
+  @CreateDateColumn({ name: 'created_at' })
   createdAt!: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt?: Date;
 
-  @DeleteDateColumn()
+  @DeleteDateColumn({ name: 'deleted_at' })
   deletedAt?: Date | null;
 }

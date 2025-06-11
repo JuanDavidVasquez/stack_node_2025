@@ -1,4 +1,5 @@
-// src/application/use-cases/user/create-user.use-case.ts (Updated with Email)
+// src/application/use-cases/user/create-user.use-case.ts
+
 import { User } from '../../../domain/entities/user.entity';
 import { UserRepository } from '../../../domain/repositories/user.repository';
 import { ApplicationError } from '../../../shared/errors/application.error';
@@ -9,11 +10,9 @@ import { CreateUserResponseDTO } from '../../dtos/response/user/user-response.dt
 import { EncryptionAdapter, UuidAdapter } from '../../../infrastructure/adaptadores';
 import { EmailService } from '../../../infrastructure/services/email.service';
 import { UserRole } from '../../../shared/constants/roles';
+import { SupportedLanguage, t, setLanguage } from '../../../shared/i18n';
 import { ZodError } from 'zod';
 
-/**
- * Caso de uso para crear un nuevo usuario con envío de email de bienvenida
- */
 export class CreateUserUseCase {
   private readonly logger = setupLogger({
     ...config.logging,
@@ -27,23 +26,21 @@ export class CreateUserUseCase {
     private readonly emailService: EmailService
   ) {}
 
-  /**
-   * Ejecuta el caso de uso
-   * @param rawCreateData Datos sin validar para crear el usuario
-   * @returns Datos del usuario creado
-   */
-  async execute(rawCreateData: unknown): Promise<CreateUserResponseDTO> {
+  async execute(rawCreateData: unknown, language: SupportedLanguage = 'es'): Promise<CreateUserResponseDTO> {
     try {
+      // Establecer idioma globalmente al inicio
+      setLanguage(language);
+      
       // Validar entrada con Zod
       const createUserDTO = validateCreateUserRequest(rawCreateData);
       
-      this.logger.info(`Creating new user with email: ${createUserDTO.email}`);
+      this.logger.info(`Creating new user with email: ${createUserDTO.email} in language: ${language}`);
 
       // Verificar si el usuario ya existe
       const existingUser = await this.userRepository.findByEmail(createUserDTO.email);
       if (existingUser) {
         this.logger.warn(`User with email ${createUserDTO.email} already exists`);
-        throw new ApplicationError(`User with email ${createUserDTO.email} already exists`);
+        throw new ApplicationError(t('errors.userAlreadyExists', { email: createUserDTO.email }, language));
       }
 
       // Generar un ID único
@@ -55,7 +52,7 @@ export class CreateUserUseCase {
       // Generar código de verificación
       const verificationCode = this.uuidAdapter.generate();
 
-      // Crear entidad de usuario
+      // Crear entidad de usuario - INCLUIR LANGUAGE EN EL USUARIO
       const user = new User({
         id: userId,
         email: createUserDTO.email,
@@ -63,7 +60,7 @@ export class CreateUserUseCase {
         firstName: createUserDTO.firstName,
         lastName: createUserDTO.lastName,
         role: createUserDTO.role || UserRole.USER,
-        isActive: false, // Usuario inactivo hasta verificar email
+        isActive: false,
         verificationCode,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -72,12 +69,11 @@ export class CreateUserUseCase {
       // Guardar el usuario
       const savedUser = await this.userRepository.save(user);
 
-      // Enviar email de bienvenida (después de guardar exitosamente)
-      await this.sendWelcomeEmail(savedUser);
+      // PASAR EL IDIOMA EXPLÍCITAMENTE al envío de email
+      await this.sendWelcomeEmail(savedUser, language);
 
       this.logger.info(`User created successfully: ${savedUser.id}`);
 
-      // Retornar respuesta DTO
       return {
         id: savedUser.id,
         email: savedUser.email,
@@ -106,18 +102,17 @@ export class CreateUserUseCase {
     }
   }
 
-  /**
-   * Envía el email de bienvenida al usuario recién creado
-   * @param user Usuario al que enviar el email
-   */
-  private async sendWelcomeEmail(user: User): Promise<void> {
+  private async sendWelcomeEmail(user: User, language: SupportedLanguage): Promise<void> {
     try {
-      this.logger.info(`Sending welcome email to: ${user.email}`);
+      this.logger.info(`Sending welcome email to: ${user.email} in language: ${language}`);
 
-      // Construir URL de verificación (ajusta según tu frontend)
+      // CRÍTICO: Establecer el idioma antes de obtener traducciones
+      setLanguage(language);
+
+      // Construir URL de verificación
       const verificationUrl = `${config.app.baseUrl || 'https://localhost:4000'}/verify-email?code=${user.verificationCode}`;
       
-      // Variables para el template
+      // Preparar variables del template con traducciones en el idioma correcto
       const templateVariables = {
         // Información del usuario
         firstName: user.firstName,
@@ -134,28 +129,79 @@ export class CreateUserUseCase {
         appVersion: config.app.version,
         appDescription: config.app.description,
         
-        // URLs útiles (ajusta según tu aplicación)
+        // URLs útiles
         dashboardUrl: `${config.app.baseUrl || 'https://localhost:4000'}/dashboard`,
         profileUrl: `${config.app.baseUrl || 'https://localhost:4000'}/profile`,
         supportEmail: 'support@onelessonperday.com',
         
+        // PASAR IDIOMA EXPLÍCITAMENTE EN LAS VARIABLES
+        language: language,
+        
+        // Textos traducidos con idioma explícito
+        welcome: {
+          subject: t('welcome.subject', { appName: config.app.name }, language),
+          title: t('welcome.title', { firstName: user.firstName }, language),
+          subtitle: t('welcome.subtitle', { appName: config.app.name }, language),
+          greeting: t('welcome.greeting', { firstName: user.firstName }, language),
+          thankYou: t('welcome.thankYou', { appName: config.app.name, firstName: user.firstName }, language),
+          accountVerified: t('welcome.accountVerified', {}, language),
+          accountInfo: {
+            title: t('welcome.accountInfo.title', {}, language),
+            email: t('welcome.accountInfo.email', {}, language),
+            name: t('welcome.accountInfo.name', {}, language),
+            accountType: t('welcome.accountInfo.accountType', {}, language),
+            registrationDate: t('welcome.accountInfo.registrationDate', {}, language)
+          },
+          getStarted: {
+            title: t('welcome.getStarted.title', {}, language),
+            step1: {
+              title: t('welcome.getStarted.step1.title', {}, language),
+              description: t('welcome.getStarted.step1.description', {}, language)
+            },
+            step2: {
+              title: t('welcome.getStarted.step2.title', {}, language),
+              description: t('welcome.getStarted.step2.description', {}, language)
+            },
+            step3: {
+              title: t('welcome.getStarted.step3.title', {}, language),
+              description: t('welcome.getStarted.step3.description', {}, language)
+            }
+          },
+          support: {
+            title: t('welcome.support.title', {}, language),
+            message: t('welcome.support.message', {}, language),
+            contactUs: t('welcome.support.contactUs', {}, language)
+          },
+          closing: t('welcome.closing', { appName: config.app.name }, language),
+          signature: t('welcome.signature', {}, language),
+          teamSignature: t('welcome.teamSignature', { appName: config.app.name }, language),
+          primaryButton: t('welcome.primaryButton', {}, language)
+        },
+        
         // Metadata
         emailType: 'welcome',
         currentYear: new Date().getFullYear(),
-        createdAt: user.createdAt.toLocaleDateString('es-ES', {
+        createdAt: user.createdAt.toLocaleDateString(language === 'en' ? 'en-US' : 'es-ES', {
           year: 'numeric',
           month: 'long',
           day: 'numeric'
         })
       };
 
+      // Log para debugging
+      this.logger.debug(`Template variables for ${language}:`, {
+        language: templateVariables.language,
+        welcomeTitle: templateVariables.welcome.title,
+        welcomeSubject: templateVariables.welcome.subject
+      });
+
       const emailResult = await this.emailService.sendTemplateEmail({
-        template: 'welcome', // Archivo welcome.hbs
+        template: 'welcome',
         to: {
           email: user.email,
           name: user.getFullName()
         },
-        subject: `¡Bienvenido a ${config.app.name}! Verifica tu cuenta`,
+        subject: t('welcome.subject', { appName: config.app.name }, language),
         variables: templateVariables,
         priority: 'high'
       });
@@ -163,25 +209,18 @@ export class CreateUserUseCase {
       if (emailResult.success) {
         this.logger.info(`Welcome email sent successfully to: ${user.email}, MessageID: ${emailResult.messageId}`);
       } else {
-        // Log error pero no fallar la creación del usuario
         this.logger.error(`Failed to send welcome email to: ${user.email}, Error: ${emailResult.error}`);
         
-        // En desarrollo, podrías querer fallar
         if (config.app.env === 'development') {
           this.logger.warn('Email sending failed in development, but continuing...');
         }
       }
     } catch (error) {
-      // Log error pero no fallar la creación del usuario
       this.logger.error(`Error sending welcome email to: ${user.email}:`, error);
       
-      // En desarrollo, podrías querer fallar
       if (config.app.env === 'development') {
         this.logger.warn('Email service error in development, but continuing...');
       }
-      
-      // En producción, podrías enviar a una cola de reintentos
-      // TODO: Implementar cola de emails fallidos
     }
   }
 }
